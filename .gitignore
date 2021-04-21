@@ -1,0 +1,12 @@
+__pycache__
+.idea
+gen
+
+# ANTLR4 trash
+.antlr
+*Lexer.py
+*Parser.py
+*Listener.py
+*Visitor.py
+*.interp
+*.tokens
