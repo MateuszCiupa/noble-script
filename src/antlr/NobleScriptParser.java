@@ -1,4 +1,4 @@
-package com.noble.script.antlr;// Generated from C:/Users/Danie/Desktop/NobleScript/resources\NobleScript.g4 by ANTLR 4.9.1
+package antlr;// Generated from C:/Users/Danie/Desktop/NobleScript/resources\NobleScript.g4 by ANTLR 4.9.1
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -135,7 +135,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitProgram(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitProgram(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -207,7 +207,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitStatement(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitStatement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -293,7 +293,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitAssign_statement(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitAssign_statement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -342,7 +342,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitReturn_statement(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitReturn_statement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -395,7 +395,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitDefinition(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitDefinition(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -471,7 +471,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitStructure_definition(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitStructure_definition(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -555,7 +555,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitFunction_definition(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitFunction_definition(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -657,7 +657,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitVariable_definition(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitVariable_definition(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -714,7 +714,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitExpression(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -771,7 +771,7 @@ public class NobleScriptParser extends Parser {
 			setState(135);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,8,_ctx);
-			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+			while ( _alt!=2 && _alt!= ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
@@ -827,7 +827,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitValue(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitValue(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -901,7 +901,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitFunction_call_stm(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitFunction_call_stm(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -999,7 +999,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitPrint_stm(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitPrint_stm(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1050,7 +1050,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitLiteral(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitLiteral(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1109,7 +1109,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitPrimitive_literal(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitPrimitive_literal(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1163,7 +1163,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitArray_literal(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitArray_literal(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1212,7 +1212,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitType(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitType(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1269,7 +1269,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitArray_type(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitArray_type(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1317,7 +1317,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitPrimitive_type(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitPrimitive_type(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1376,7 +1376,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitOperator(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitOperator(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1432,7 +1432,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitCompound_statement(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitCompound_statement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1502,7 +1502,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitLoop_statement(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitLoop_statement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1602,7 +1602,7 @@ public class NobleScriptParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NobleScriptVisitor) return ((NobleScriptVisitor<? extends T>)visitor).visitIf_statement(this);
+			if ( visitor instanceof NobleScriptVisitor ) return ((NobleScriptVisitor<? extends T>)visitor).visitIf_statement(this);
 			else return visitor.visitChildren(this);
 		}
 	}

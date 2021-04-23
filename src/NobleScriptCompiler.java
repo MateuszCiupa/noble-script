@@ -1,9 +1,5 @@
-package com.noble.script;
-
-import com.noble.script.antlr.NobleScriptLexer;
-import com.noble.script.antlr.NobleScriptParser;
-import com.noble.script.llvm.generator.LLVMActions;
-import com.noble.script.llvm.generator.LLVMGenerator;
+import antlr.NobleScriptLexer;
+import antlr.NobleScriptParser;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -27,16 +23,15 @@ public class NobleScriptCompiler {
 
             ParseTreeWalker walker = new ParseTreeWalker();
             LLVMGenerator generator = new LLVMGenerator();
-            walker.walk(new LLVMActions(generator), tree);
+            walker.walk(new LLVMActions(generator, 1), tree);
 
-            generator.print("LLVM Hello world!");
+            generator._example_print("LLVM Hello world!");
+//            String lvmCode = generator._example_generate();
             String lvmCode = generator.generate();
 
             try (FileWriter fw = new FileWriter("./resources/example.ll")) {
                 fw.write(lvmCode);
             }
-            System.out.println("Generated code:");
-            System.out.println(lvmCode);
         } catch (IOException e) {
             e.printStackTrace();
         }

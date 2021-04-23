@@ -11,8 +11,15 @@ target triple = "x86_64-pc-linux-gnu"
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local double @naszaFunkcjaOddajeFloat() #0 {
-  %1 = load double, double* @mojGlobalFlaot, align 8
-  ret double %1
+  %1 = alloca i32, align 4
+  %2 = alloca i32, align 4
+  store i32 69, i32* %1, align 4
+  %3 = load i32, i32* %1, align 4
+  %4 = add nsw i32 420, %3
+  store i32 %4, i32* %2, align 4
+  %5 = load i32, i32* %2, align 4
+  %6 = sitofp i32 %5 to double
+  ret double %6
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable

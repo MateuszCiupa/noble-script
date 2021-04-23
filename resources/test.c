@@ -4,8 +4,11 @@ int mojGlobalInt2 = 213;
 int mojGlobalInt3;
 double mojGlobalFlaot = 20.0;
 
+
 double naszaFunkcjaOddajeFloat(){
-    return mojGlobalFlaot;
+    int a = 69;
+    int b = 420 + a;
+    return b;
  }
 
 int main (){

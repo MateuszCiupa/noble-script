@@ -17,7 +17,7 @@ variable_definition: type assign_statement;
 expression: value | expression operator expression | PAR_OPEN expression PAR_CLOSE;
 value: literal | function_call_stm | ID;
 function_call_stm: ID '(' (expression)? (','expression)* ')' | READ | print_stm;
-print_stm: 'print (' expression ')';
+print_stm: 'print' '(' expression ')';
 
 literal: primitive_literal | array_literal;
 primitive_literal: BOOLEAN_LITERAL | INT_LITERAL | DOUBLE_LITERAL | STRING_LITERAL | NULL;

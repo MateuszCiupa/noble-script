@@ -1,4 +1,4 @@
-package com.noble.script.antlr;// Generated from C:/Users/Danie/Desktop/NobleScript/resources\NobleScript.g4 by ANTLR 4.9.1
+package antlr;// Generated from C:/Users/Danie/Desktop/NobleScript/resources\NobleScript.g4 by ANTLR 4.9.1
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
