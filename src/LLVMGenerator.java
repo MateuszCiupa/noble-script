@@ -1,3 +1,5 @@
+import java.util.HashSet;
+
 public class LLVMGenerator {
     static String _example_header_text = "";
     static String _example_main_text = "";
@@ -20,17 +22,28 @@ public class LLVMGenerator {
         register++;
     }
 
-    public void declare_i32(String id) {
-        sb.append("%")
-                .append(id)
-                .append(" = alloca i32\n");
+    public void declare_i32(String id, boolean global) {
+        if (global) {
+            sb.append("@")
+                    .append(id)
+                    .append(" = global i32 0\n");
+        } else {
+            sb.append("%")
+                    .append(id)
+                    .append(" = alloca i32\n");
+        }
     }
 
-    public void assign_i32(String id, String value) {
+    public void assign_i32(String id, String value, HashSet<String> globalIds) {
         sb.append("store i32 ")
                 .append(value)
-                .append(", i32* %")
-                .append(id)
+                .append(", i32* ");
+        if (globalIds != null && globalIds.contains(id)) {
+            sb.append("@");
+        } else {
+            sb.append("%");
+        }
+        sb.append(id)
                 .append("\n");
     }
 

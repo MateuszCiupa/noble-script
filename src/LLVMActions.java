@@ -1,10 +1,9 @@
-import antlr.NobleScriptListener;
-import antlr.NobleScriptParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Stack;
 
 class Value {
@@ -18,11 +17,13 @@ class Value {
 }
 
 public class LLVMActions implements NobleScriptListener {
-
-    private HashMap<String, VarType> variables = new HashMap<String, VarType>();
+    private HashMap<String, Value> variables = new HashMap<String, Value>();
+    private HashSet<String> globalIds = new HashSet<>();
+    private HashSet<String> localIds = new HashSet<>();
     private Stack<Value> stack = new Stack<>();
     private LLVMGenerator generator;
 
+    private boolean global = true;
     private int logLevel;
 
     public LLVMActions(LLVMGenerator generator, int logLevel) {
@@ -109,11 +110,11 @@ public class LLVMActions implements NobleScriptListener {
     public void exitVariable_definition(NobleScriptParser.Variable_definitionContext ctx) {
         log("on exitVariable_definition");
 
-        String varId = ctx.assign_statement().ID().getText();
+        String id = ctx.assign_statement().ID().getText();
         String value = ctx.assign_statement().expression().value().getText();
 
-        generator.declare_i32(varId);
-        generator.assign_i32(varId, value);
+        generator.declare_i32(id, true);
+        generator.assign_i32(id, value, globalIds);
     }
 
     @Override
@@ -272,6 +273,19 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitEveryRule(ParserRuleContext parserRuleContext) {
     }
+
+//    private void declareVariable(String ID, Value value) {
+//        if (!variables.containsKey(ID)) {
+//            if (value.type != VarType.STRING) {
+//                variables.put(ID, value);
+//            }
+//            if (value.type == VarType.INT) {
+//                generator.declare_i32(ID, global);
+//            } else if (value.type == VarType.DOUBLE) {
+//                LLVMGenerator.declare_double(ID, global);
+//            }
+//        }
+//    }
 
     private void log(String msg) {
         if (logLevel > 0) System.out.println(msg);

@@ -1,5 +1,3 @@
-import antlr.NobleScriptLexer;
-import antlr.NobleScriptParser;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -13,7 +11,7 @@ public class NobleScriptCompiler {
 
     public static void main(String[] args) {
         try {
-            ANTLRFileStream input = new ANTLRFileStream("./resources/example.ns");
+            ANTLRFileStream input = new ANTLRFileStream("./tests/example.ns");
             NobleScriptLexer lexer = new NobleScriptLexer(input);
 
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -29,7 +27,7 @@ public class NobleScriptCompiler {
 //            String lvmCode = generator._example_generate();
             String lvmCode = generator.generate();
 
-            try (FileWriter fw = new FileWriter("./resources/example.ll")) {
+            try (FileWriter fw = new FileWriter("./tests/example.ll")) {
                 fw.write(lvmCode);
             }
         } catch (IOException e) {
