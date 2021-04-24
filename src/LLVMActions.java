@@ -4,26 +4,29 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
-class Value {
-    public String name;
-    public VarType type;
 
-    public Value(String name, VarType type) {
-        this.name = name;
+class Definition {
+    public String id;
+    public VarType type;
+    public DefinitionType defType;
+
+    public Definition(String id, VarType type, DefinitionType defType) {
+        this.id = id;
         this.type = type;
+        this.defType = defType;
     }
 }
 
 public class LLVMActions implements NobleScriptListener {
-    private HashMap<String, Value> variables = new HashMap<String, Value>();
-    private HashSet<String> globalIds = new HashSet<>();
-    private HashSet<String> localIds = new HashSet<>();
-    private Stack<Value> stack = new Stack<>();
+    private HashMap<String, Set<Definition>> functionDefs = new HashMap();
+    private HashSet<Definition> globalDefs= new HashSet<>();
+
+    private Stack<String> functionStack = new Stack<>();
     private LLVMGenerator generator;
 
-    private boolean global = true;
     private int logLevel;
 
     public LLVMActions(LLVMGenerator generator, int logLevel) {
@@ -94,27 +97,41 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterFunction_definition(NobleScriptParser.Function_definitionContext ctx) {
         log("on enterFunction_definition");
+        VarType newFunType = VarType.getType(ctx.type(0).getText());
+        String newFunId = ctx.ID(0).getText();
+        Definition newFunDef = new Definition(newFunId, newFunType, DefinitionType.FUNCTION);
+
+        String lastFunId = functionStack.empty() ? "" : functionStack.peek();
+
+
+        functionDefs.put(lastFunId + ctx.ID(0).getText(), newFunDef);
+        functionStack.push(lastFunId + ctx.ID(0).getText());
     }
 
     @Override
     public void exitFunction_definition(NobleScriptParser.Function_definitionContext ctx) {
         log("on exitFunction_definition");
+        functionStack.pop();
     }
 
     @Override
     public void enterVariable_definition(NobleScriptParser.Variable_definitionContext ctx) {
         log("on enterVariable_definition");
+
     }
 
     @Override
     public void exitVariable_definition(NobleScriptParser.Variable_definitionContext ctx) {
         log("on exitVariable_definition");
 
+        if (globalIds) {
+            ctx.type()
+        }
         String id = ctx.assign_statement().ID().getText();
         String value = ctx.assign_statement().expression().value().getText();
 
-        generator.declare_i32(id, true);
-        generator.assign_i32(id, value, globalIds);
+        generator.declare_i32(id, functionStack.empty());
+        generator.assign_i32(id, value, functionStack.empty(), );
     }
 
     @Override

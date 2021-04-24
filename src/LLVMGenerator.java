@@ -34,11 +34,11 @@ public class LLVMGenerator {
         }
     }
 
-    public void assign_i32(String id, String value, HashSet<String> globalIds) {
+    public void assign_i32(String id, String value, boolean global) {
         sb.append("store i32 ")
                 .append(value)
                 .append(", i32* ");
-        if (globalIds != null && globalIds.contains(id)) {
+        if (global) {
             sb.append("@");
         } else {
             sb.append("%");
