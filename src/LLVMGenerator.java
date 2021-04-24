@@ -43,7 +43,7 @@ public class LLVMGenerator {
     }
 
     // TODO is global?
-    public void print_i32(String id) {
+    public void print_i32_from_variable(String id) {
         buffer.append("%")
                 .append(register++)
                 .append(" = load i32, i32* %")
@@ -53,6 +53,15 @@ public class LLVMGenerator {
                 .append(register)
                 .append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %")
                 .append(register - 1)
+                .append(")\n");
+        register++;
+    }
+
+    public void print_i32_from_register(String content) {
+        buffer.append("%")
+                .append(register++)
+                .append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 ")
+                .append(content)
                 .append(")\n");
         register++;
     }

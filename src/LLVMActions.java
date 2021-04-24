@@ -159,6 +159,8 @@ public class LLVMActions implements NobleScriptListener {
         final String newVarId = ctx.assign_statement().ID().getText();
         final Definition newVarDef = new Definition(newVarId, newVarType, DefinitionType.VARIABLE);
 
+        //TODO more types
+
         // Check function scope
         final String scopeId = functionStack.empty() ? "" : functionStack.peek();
         if (functionDefs.containsKey(scopeId)) {
@@ -177,15 +179,15 @@ public class LLVMActions implements NobleScriptListener {
         log("on exitVariable_definition");
         final boolean isGlobal = functionStack.empty();
         final String id = ctx.assign_statement().ID().getText();
-        final String value = valueStack.pop().content;
 
-        // TODO add more types
-        switch (VarType.getType(ctx.type().getText())) {
-            case INT:
+        final Value value = valueStack.pop();
+        switch (value.type) {
+            case VALUE_INT:
                 generator.declare_i32(id, isGlobal);
-                generator.assign_i32(id, value, isGlobal);
+                generator.assign_i32(id, value.content, isGlobal);
                 break;
             default:
+                // TODO add more types
                 throw new UnsupportedOperationException();
         }
     }
@@ -198,6 +200,46 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitExpression(NobleScriptParser.ExpressionContext ctx) {
         log("on exitExpression");
+    }
+
+    @Override
+    public void enterExpression0(NobleScriptParser.Expression0Context ctx) {
+
+    }
+
+    @Override
+    public void exitExpression0(NobleScriptParser.Expression0Context ctx) {
+
+    }
+
+    @Override
+    public void enterExpression1(NobleScriptParser.Expression1Context ctx) {
+
+    }
+
+    @Override
+    public void exitExpression1(NobleScriptParser.Expression1Context ctx) {
+
+    }
+
+    @Override
+    public void enterExpression2(NobleScriptParser.Expression2Context ctx) {
+
+    }
+
+    @Override
+    public void exitExpression2(NobleScriptParser.Expression2Context ctx) {
+
+    }
+
+    @Override
+    public void enterExpression3(NobleScriptParser.Expression3Context ctx) {
+
+    }
+
+    @Override
+    public void exitExpression3(NobleScriptParser.Expression3Context ctx) {
+
     }
 
     @Override
@@ -221,6 +263,7 @@ public class LLVMActions implements NobleScriptListener {
                 scopes[i] = scopes[i - 1] + "." + scopes[i];
             }
             for (int i = scopes.length - 1; i >= 0; i--) {
+                if(scopes[i].equals(GLOBAL_SCOPE_STACK_ID)) continue;
                 if (functionDefs.get(scopes[i]).containsKey(valueID)) {
                     variableDefinition = functionDefs.get(scopes[i]).get(valueID);
                     isGlobal = false;
@@ -266,7 +309,13 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitPrint_stm(NobleScriptParser.Print_stmContext ctx) {
         log("on exitPrint_stm");
-        generator.print_i32(ctx.expression().value().ID().getText());
+        // TODO handle more types
+        Value value = valueStack.pop();
+        if (value.type == VALUE_ID){
+            generator.print_i32_from_register(value.content);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
@@ -375,13 +424,43 @@ public class LLVMActions implements NobleScriptListener {
     }
 
     @Override
-    public void enterOperator(NobleScriptParser.OperatorContext ctx) {
-        log("on enterOperator");
+    public void enterOperator3(NobleScriptParser.Operator3Context ctx) {
+        log("on enterOperator3");
     }
 
     @Override
-    public void exitOperator(NobleScriptParser.OperatorContext ctx) {
-        log("on exitOperator");
+    public void exitOperator3(NobleScriptParser.Operator3Context ctx) {
+        log("on exitOperator3");
+    }
+
+    @Override
+    public void enterOperator2(NobleScriptParser.Operator2Context ctx) {
+        log("on enterOperator2");
+    }
+
+    @Override
+    public void exitOperator2(NobleScriptParser.Operator2Context ctx) {
+        log("on exitOperator2");
+    }
+
+    @Override
+    public void enterOperator1(NobleScriptParser.Operator1Context ctx) {
+        log("on enterOperator1");
+    }
+
+    @Override
+    public void exitOperator1(NobleScriptParser.Operator1Context ctx) {
+        log("on exitOperator1");
+    }
+
+    @Override
+    public void enterOperator0(NobleScriptParser.Operator0Context ctx) {
+        log("on enterOperator0");
+    }
+
+    @Override
+    public void exitOperator0(NobleScriptParser.Operator0Context ctx) {
+        log("on exitOperator0");
     }
 
     @Override

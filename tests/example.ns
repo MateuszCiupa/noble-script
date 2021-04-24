@@ -1,7 +1,5 @@
-int myGlobalInt = 999;
+int a = 2;
+print(a);
 
-int b1(){
-    int myLocalInt = 3;
-    int myLocalIntCopy = myLocalInt;
-    print(myLocalIntCopy);
-}
+a = 2;
+print()''

@@ -64,6 +64,30 @@ public interface NobleScriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpression(NobleScriptParser.ExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link NobleScriptParser#expression0}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpression0(NobleScriptParser.Expression0Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link NobleScriptParser#expression1}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpression1(NobleScriptParser.Expression1Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link NobleScriptParser#expression2}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpression2(NobleScriptParser.Expression2Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link NobleScriptParser#expression3}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpression3(NobleScriptParser.Expression3Context ctx);
+	/**
 	 * Visit a parse tree produced by {@link NobleScriptParser#value}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -147,11 +171,29 @@ public interface NobleScriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPrimitive_type(NobleScriptParser.Primitive_typeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NobleScriptParser#operator}.
+	 * Visit a parse tree produced by {@link NobleScriptParser#operator3}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitOperator(NobleScriptParser.OperatorContext ctx);
+	T visitOperator3(NobleScriptParser.Operator3Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link NobleScriptParser#operator2}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOperator2(NobleScriptParser.Operator2Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link NobleScriptParser#operator1}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOperator1(NobleScriptParser.Operator1Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link NobleScriptParser#operator0}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOperator0(NobleScriptParser.Operator0Context ctx);
 	/**
 	 * Visit a parse tree produced by {@link NobleScriptParser#compound_statement}.
 	 * @param ctx the parse tree

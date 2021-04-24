@@ -97,6 +97,46 @@ public interface NobleScriptListener extends ParseTreeListener {
 	 */
 	void exitExpression(NobleScriptParser.ExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#expression0}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression0(NobleScriptParser.Expression0Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#expression0}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression0(NobleScriptParser.Expression0Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#expression1}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression1(NobleScriptParser.Expression1Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#expression1}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression1(NobleScriptParser.Expression1Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#expression2}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression2(NobleScriptParser.Expression2Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#expression2}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression2(NobleScriptParser.Expression2Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#expression3}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression3(NobleScriptParser.Expression3Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#expression3}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression3(NobleScriptParser.Expression3Context ctx);
+	/**
 	 * Enter a parse tree produced by {@link NobleScriptParser#value}.
 	 * @param ctx the parse tree
 	 */
@@ -237,15 +277,45 @@ public interface NobleScriptListener extends ParseTreeListener {
 	 */
 	void exitPrimitive_type(NobleScriptParser.Primitive_typeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NobleScriptParser#operator}.
+	 * Enter a parse tree produced by {@link NobleScriptParser#operator3}.
 	 * @param ctx the parse tree
 	 */
-	void enterOperator(NobleScriptParser.OperatorContext ctx);
+	void enterOperator3(NobleScriptParser.Operator3Context ctx);
 	/**
-	 * Exit a parse tree produced by {@link NobleScriptParser#operator}.
+	 * Exit a parse tree produced by {@link NobleScriptParser#operator3}.
 	 * @param ctx the parse tree
 	 */
-	void exitOperator(NobleScriptParser.OperatorContext ctx);
+	void exitOperator3(NobleScriptParser.Operator3Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#operator2}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperator2(NobleScriptParser.Operator2Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#operator2}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperator2(NobleScriptParser.Operator2Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#operator1}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperator1(NobleScriptParser.Operator1Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#operator1}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperator1(NobleScriptParser.Operator1Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#operator0}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperator0(NobleScriptParser.Operator0Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#operator0}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperator0(NobleScriptParser.Operator0Context ctx);
 	/**
 	 * Enter a parse tree produced by {@link NobleScriptParser#compound_statement}.
 	 * @param ctx the parse tree
