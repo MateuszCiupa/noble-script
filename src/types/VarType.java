@@ -1,3 +1,5 @@
+package types;
+
 public enum VarType {
     BOOLEAN("boolean"), INT("int"), DOUBLE("double"), STRING("string"), NULL("null");
 

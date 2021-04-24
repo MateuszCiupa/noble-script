@@ -32,7 +32,7 @@ function_call_stm: ID '(' (expression)? (','expression)* ')' | READ | print_stm;
 print_stm: 'print(' expression ')';
 
 literal: primitive_literal | array_literal;
-primitive_literal: BOOLEAN_LITERAL | INT_LITERAL | DOUBLE_LITERAL | STRING_LITERAL | NULL;
+primitive_literal: BOOLEAN_LITERAL #boolean | INT_LITERAL #int | DOUBLE_LITERAL #double | STRING_LITERAL #string | NULL #null;
 array_literal: primitive_type ARRAY_SIZE_LITERAL;
 
 type: primitive_type

@@ -1,4 +1,4 @@
-// Generated from //wsl$/Ubuntu-20.04/home/ciupam/repos/noble-script/src\NobleScript.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Danie/Desktop/noble-script/src\NobleScript.g4 by ANTLR 4.9.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -137,15 +137,65 @@ public interface NobleScriptListener extends ParseTreeListener {
 	 */
 	void exitLiteral(NobleScriptParser.LiteralContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NobleScriptParser#primitive_literal}.
+	 * Enter a parse tree produced by the {@code boolean}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
 	 * @param ctx the parse tree
 	 */
-	void enterPrimitive_literal(NobleScriptParser.Primitive_literalContext ctx);
+	void enterBoolean(NobleScriptParser.BooleanContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NobleScriptParser#primitive_literal}.
+	 * Exit a parse tree produced by the {@code boolean}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
 	 * @param ctx the parse tree
 	 */
-	void exitPrimitive_literal(NobleScriptParser.Primitive_literalContext ctx);
+	void exitBoolean(NobleScriptParser.BooleanContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code int}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterInt(NobleScriptParser.IntContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code int}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitInt(NobleScriptParser.IntContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code double}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterDouble(NobleScriptParser.DoubleContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code double}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitDouble(NobleScriptParser.DoubleContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code string}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterString(NobleScriptParser.StringContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code string}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitString(NobleScriptParser.StringContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code null}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterNull(NobleScriptParser.NullContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code null}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitNull(NobleScriptParser.NullContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NobleScriptParser#array_literal}.
 	 * @param ctx the parse tree

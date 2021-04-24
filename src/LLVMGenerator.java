@@ -6,6 +6,10 @@ public class LLVMGenerator {
 
     private int register = 1;
 
+    public int getRegister() {
+        return register;
+    }
+
     public String generate() {
         main.append(buffer);
 
@@ -27,6 +31,15 @@ public class LLVMGenerator {
                 sb.toString() +
                 "  ret i32 0\n" +
                 "}\n";
+    }
+
+    public void load_i32(String id, boolean isGlobal) {
+        buffer.append("%")
+                .append(register++)
+                .append(" = load i32, i32* ")
+                .append(isGlobal ? "@" : "%")
+                .append(id)
+                .append("\n");
     }
 
     // TODO is global?

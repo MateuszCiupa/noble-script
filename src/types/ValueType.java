@@ -1,0 +1,5 @@
+package types;
+
+public enum ValueType {
+    VALUE_BOOLEAN, VALUE_INT, VALUE_DOUBLE, VALUE_STRING, VALUE_NULL, VALUE_ID, VALUE_FUNC_CALL
+}

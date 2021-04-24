@@ -1,4 +1,4 @@
-// Generated from //wsl$/Ubuntu-20.04/home/ciupam/repos/noble-script/src\NobleScript.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Danie/Desktop/noble-script/src\NobleScript.g4 by ANTLR 4.9.1
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -88,11 +88,40 @@ public interface NobleScriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLiteral(NobleScriptParser.LiteralContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NobleScriptParser#primitive_literal}.
+	 * Visit a parse tree produced by the {@code boolean}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPrimitive_literal(NobleScriptParser.Primitive_literalContext ctx);
+	T visitBoolean(NobleScriptParser.BooleanContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code int}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInt(NobleScriptParser.IntContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code double}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDouble(NobleScriptParser.DoubleContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code string}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitString(NobleScriptParser.StringContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code null}
+	 * labeled alternative in {@link NobleScriptParser#primitive_literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNull(NobleScriptParser.NullContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NobleScriptParser#array_literal}.
 	 * @param ctx the parse tree
