@@ -1,0 +1,9 @@
+int a = 1;
+print(a);
+
+int a() {}
+
+int ala() {
+  int a = 5;
+  int a() {}
+}
