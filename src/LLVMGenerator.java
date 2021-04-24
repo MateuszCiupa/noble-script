@@ -63,7 +63,6 @@ public class LLVMGenerator {
                 .append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 ")
                 .append(content)
                 .append(")\n");
-        register++;
     }
 
     public void declare_i32(String id, boolean global) {
@@ -89,5 +88,48 @@ public class LLVMGenerator {
         }
         buffer.append(id)
                 .append("\n");
+    }
+
+    public void add_i32(String val1, String val2) {
+        buffer.append("%")
+                .append(register)
+                .append(" = add i32 ")
+                .append(val1)
+                .append(", ")
+                .append(val2)
+                .append("\n");
+        register++;
+    }
+
+    public void mul_i32(String val1, String val2) {
+        buffer.append("%")
+                .append(register)
+                .append(" = mul i32 ")
+                .append(val1)
+                .append(", ")
+                .append(val2)
+                .append("\n");
+        register++;
+    }
+
+    public void sub_i32(String val1, String val2) {
+        buffer.append("%")
+                .append(register)
+                .append(" = sub i32 ")
+                .append(val1).append(", ")
+                .append(val2)
+                .append("\n");
+        register++;
+    }
+
+    public void div_i32(String val1, String val2) {
+        buffer.append("%")
+                .append(register)
+                .append(" = sdiv i32 ")
+                .append(val1)
+                .append(", ")
+                .append(val2)
+                .append("\n");
+        register++;
     }
 }

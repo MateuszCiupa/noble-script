@@ -1,5 +1,6 @@
 import exceptions.IDAlreadyDefinedException;
 import exceptions.IDNotDefinedException;
+import exceptions.TypeMismatchException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -183,6 +184,7 @@ public class LLVMActions implements NobleScriptListener {
         final Value value = valueStack.pop();
         switch (value.type) {
             case VALUE_INT:
+            case VALUE_REGISTER:
                 generator.declare_i32(id, isGlobal);
                 generator.assign_i32(id, value.content, isGlobal);
                 break;
@@ -204,42 +206,70 @@ public class LLVMActions implements NobleScriptListener {
 
     @Override
     public void enterExpression0(NobleScriptParser.Expression0Context ctx) {
+        log("on enterExpression0");
 
     }
 
     @Override
     public void exitExpression0(NobleScriptParser.Expression0Context ctx) {
-
+        log("on exitExpression0");
     }
 
     @Override
     public void enterExpression1(NobleScriptParser.Expression1Context ctx) {
-
+        log("on enterExpression1");
     }
 
     @Override
     public void exitExpression1(NobleScriptParser.Expression1Context ctx) {
-
+        log("on exitExpression1");
     }
 
     @Override
     public void enterExpression2(NobleScriptParser.Expression2Context ctx) {
-
+        log("on enterExpression2");
     }
 
     @Override
     public void exitExpression2(NobleScriptParser.Expression2Context ctx) {
+        log("on exitExpression2");
 
+        if (ctx.operator2() != null) {
+            Value right = valueStack.pop();
+            Value left = valueStack.pop();
+
+            // TODO Type casting
+            if (right.type != left.type) {
+                TerminalNode token = ctx.operator2().DIV_OP();
+                if (token == null) token = ctx.operator2().MUL_OP();
+                throw new TypeMismatchException("Invalid type at line: " + token.getSymbol().getLine());
+            }
+
+            switch (right.type){
+                case VALUE_INT:
+                    if (ctx.operator2().DIV_OP()!=null){
+                        generator.div_i32(right.content, left.content);
+                    } else {
+                        generator.mul_i32(right.content, left.content);
+                    }
+                    Value result = new Value("%" + (generator.getRegister() - 1), VALUE_REGISTER);
+                    valueStack.push(result);
+                    break;
+                default:
+                    //TODO more types
+                    throw new UnsupportedOperationException();
+            }
+        }
     }
 
     @Override
     public void enterExpression3(NobleScriptParser.Expression3Context ctx) {
-
+        log("on enterExpression3");
     }
 
     @Override
     public void exitExpression3(NobleScriptParser.Expression3Context ctx) {
-
+        log("on exitExpression3");
     }
 
     @Override
@@ -263,7 +293,7 @@ public class LLVMActions implements NobleScriptListener {
                 scopes[i] = scopes[i - 1] + "." + scopes[i];
             }
             for (int i = scopes.length - 1; i >= 0; i--) {
-                if(scopes[i].equals(GLOBAL_SCOPE_STACK_ID)) continue;
+                if (scopes[i].equals(GLOBAL_SCOPE_STACK_ID)) continue;
                 if (functionDefs.get(scopes[i]).containsKey(valueID)) {
                     variableDefinition = functionDefs.get(scopes[i]).get(valueID);
                     isGlobal = false;
@@ -272,18 +302,18 @@ public class LLVMActions implements NobleScriptListener {
             }
 
             // Check if variable was defined in global scope
-            if (variableDefinition == null){
-                if(functionDefs.get(GLOBAL_SCOPE_STACK_ID).containsKey(ctx.ID().getText())){
+            if (variableDefinition == null) {
+                if (functionDefs.get(GLOBAL_SCOPE_STACK_ID).containsKey(ctx.ID().getText())) {
                     variableDefinition = functionDefs.get(GLOBAL_SCOPE_STACK_ID).get(valueID);
-                    isGlobal=true;
+                    isGlobal = true;
                 }
             }
 
-            if (variableDefinition == null){
+            if (variableDefinition == null) {
                 throw new IDNotDefinedException(valueID);
             }
 
-            Value value = new Value(getValueContent(variableDefinition, isGlobal), VALUE_ID);
+            Value value = new Value(getValueContent(variableDefinition, isGlobal), VALUE_REGISTER);
             valueStack.push(value);
         } else if (ctx.function_call_stm() != null) {
             // TODO implement functions calls
@@ -311,7 +341,7 @@ public class LLVMActions implements NobleScriptListener {
         log("on exitPrint_stm");
         // TODO handle more types
         Value value = valueStack.pop();
-        if (value.type == VALUE_ID){
+        if (value.type == VALUE_REGISTER) {
             generator.print_i32_from_register(value.content);
         } else {
             throw new UnsupportedOperationException();
