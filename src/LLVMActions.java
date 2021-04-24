@@ -2,10 +2,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 
 class Definition {
@@ -21,10 +18,11 @@ class Definition {
 }
 
 public class LLVMActions implements NobleScriptListener {
-    private HashMap<String, Set<Definition>> functionDefs = new HashMap();
-    private HashSet<Definition> globalDefs= new HashSet<>();
+    private Set<Definition> globalDefs= new HashSet<>();
 
+    private Map<String, Map<String, Definition>> functionDefs = new HashMap<>();
     private Stack<String> functionStack = new Stack<>();
+
     private LLVMGenerator generator;
 
     private int logLevel;
@@ -97,15 +95,26 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterFunction_definition(NobleScriptParser.Function_definitionContext ctx) {
         log("on enterFunction_definition");
-        VarType newFunType = VarType.getType(ctx.type(0).getText());
-        String newFunId = ctx.ID(0).getText();
-        Definition newFunDef = new Definition(newFunId, newFunType, DefinitionType.FUNCTION);
+        final VarType newFunType = VarType.getType(ctx.type(0).getText());
+        final String newFunId = ctx.ID(0).getText();
+        final Definition newFunDef = new Definition(newFunId, newFunType, DefinitionType.FUNCTION);
 
-        String lastFunId = functionStack.empty() ? "" : functionStack.peek();
+        final String lastFunStackId = functionStack.empty() ? "" : functionStack.peek() + ".";
+        final String functionStackId= lastFunStackId + newFunId;
 
+        // Check if there's a function of the same stackId
+        if(functionDefs.containsKey(functionStackId)){
+            throw new IllegalStateException("Function was already defined: " + functionStackId);
+        }
+        // check if there's a variable of the same id
+        if(functionDefs.containsKey(lastFunStackId)){
+            if(functionDefs.get(lastFunStackId).containsKey(newFunId)){
+                throw new IllegalStateException("Id was already defined: " + newFunId);
+            }
+        }
 
-        functionDefs.put(lastFunId + ctx.ID(0).getText(), newFunDef);
-        functionStack.push(lastFunId + ctx.ID(0).getText());
+        functionDefs.put(functionStackId, new HashMap<>());
+        functionStack.push(functionStackId);
     }
 
     @Override
@@ -123,15 +132,14 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitVariable_definition(NobleScriptParser.Variable_definitionContext ctx) {
         log("on exitVariable_definition");
-
-        if (globalIds) {
-            ctx.type()
-        }
-        String id = ctx.assign_statement().ID().getText();
-        String value = ctx.assign_statement().expression().value().getText();
-
-        generator.declare_i32(id, functionStack.empty());
-        generator.assign_i32(id, value, functionStack.empty(), );
+//        if (globalIds) {
+//            ctx.type()
+//        }
+//        String id = ctx.assign_statement().ID().getText();
+//        String value = ctx.assign_statement().expression().value().getText();
+//
+//        generator.declare_i32(id, functionStack.empty());
+//        generator.assign_i32(id, value, functionStack.empty(), );
     }
 
     @Override
