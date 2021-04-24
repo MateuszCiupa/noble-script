@@ -23,8 +23,6 @@ public class NobleScriptCompiler {
             LLVMGenerator generator = new LLVMGenerator();
             walker.walk(new LLVMActions(generator, 1), tree);
 
-            generator._example_print("LLVM Hello world!");
-//            String lvmCode = generator._example_generate();
             String lvmCode = generator.generate();
 
             try (FileWriter fw = new FileWriter("./tests/example.ll")) {

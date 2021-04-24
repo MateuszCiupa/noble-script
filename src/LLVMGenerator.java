@@ -1,22 +1,44 @@
-import java.util.HashSet;
-
 public class LLVMGenerator {
-    static String _example_header_text = "";
-    static String _example_main_text = "";
-    static int _example_str_i = 0;
 
-    private final StringBuilder sb = new StringBuilder();
-    private int register = 0;
+    private final StringBuilder header = new StringBuilder();
+    private final StringBuilder main = new StringBuilder();
+    private final StringBuilder buffer = new StringBuilder();
 
+    private int register = 1;
+
+    public String generate() {
+        main.append(buffer);
+
+        StringBuilder sb = new StringBuilder();
+        for (String line : main.toString().split("\n")) {
+            sb.append("  ").append(line).append("\n");
+        }
+
+        return "declare i32 @printf(i8*, ...)\n" +
+                "declare i32 @scanf(i8*, ...)\n" +
+                "@strpi = constant [4 x i8] c\"%d\\0A\\00\"\n" +
+                "@strpd = constant [4 x i8] c\"%f\\0A\\00\"\n" +
+                "@strps = constant [4 x i8] c\"%s\\0A\\00\"\n" +
+                "@strsi = constant [3 x i8] c\"%d\\00\"\n" +
+                "@strsd = constant [4 x i8] c\"%lf\\00\"\n" +
+                "\n" +
+                header.toString() +
+                "define i32 @main() nounwind {\n" +
+                sb.toString() +
+                "  ret i32 0\n" +
+                "}\n";
+    }
+
+    // TODO is global?
     public void print_i32(String id) {
-        sb.append("%")
+        buffer.append("%")
                 .append(register++)
                 .append(" = load i32, i32* %")
                 .append(id)
                 .append("\n");
-        sb.append("%")
+        buffer.append("%")
                 .append(register)
-                .append(" = call i32 (i8, ...) @printf(i8 getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %")
+                .append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %")
                 .append(register - 1)
                 .append(")\n");
         register++;
@@ -24,48 +46,26 @@ public class LLVMGenerator {
 
     public void declare_i32(String id, boolean global) {
         if (global) {
-            sb.append("@")
+            header.append("@")
                     .append(id)
                     .append(" = global i32 0\n");
         } else {
-            sb.append("%")
+            buffer.append("%")
                     .append(id)
                     .append(" = alloca i32\n");
         }
     }
 
     public void assign_i32(String id, String value, boolean global) {
-        sb.append("store i32 ")
+        buffer.append("store i32 ")
                 .append(value)
                 .append(", i32* ");
         if (global) {
-            sb.append("@");
+            buffer.append("@");
         } else {
-            sb.append("%");
+            buffer.append("%");
         }
-        sb.append(id)
+        buffer.append(id)
                 .append("\n");
-    }
-
-    public String generate() {
-        return sb.toString();
-    }
-
-    public void _example_print(String text) {
-        int str_len = text.length();
-        String str_type = "[" + (str_len + 2) + " x i8]";
-        _example_header_text += "@str" + _example_str_i + " = constant" + str_type + " c\"" + text + "\\0A\\00\"\n";
-        _example_main_text += "call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( " + str_type + ", " + str_type + "* @str" + _example_str_i + ", i32 0, i32 0))\n";
-        _example_str_i++;
-    }
-
-    public String _example_generate() {
-        String text;
-        text = "declare i32 @printf(i8*, ...)\n";
-        text += _example_header_text;
-        text += "define i32 @main() nounwind{\n";
-        text += _example_main_text;
-        text += "ret i32 0 }\n";
-        return text;
     }
 }

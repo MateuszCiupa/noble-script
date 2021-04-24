@@ -2,6 +2,10 @@ int globals = 2;
 
 int b1(){
     int a2 =6;
+    int dasda= 34534;
+    int asdsa = 342;
+    print(a2);
+    print(asdsa);
 
     int a3(){
           int b4(){
@@ -9,5 +13,11 @@ int b1(){
           }
           int  b5 = 3;
           int b1= 2;
+          print(a2);
     }
+    print(a2);
 }
+
+int b = 3;
+
+b1();
