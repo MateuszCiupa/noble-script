@@ -1,7 +1,7 @@
 public enum VarType {
     BOOLEAN("boolean"), INT("int"), DOUBLE("double"), STRING("string"), NULL("null");
 
-    private String type;
+    public String type;
 
     VarType(String type) {
         this.type = type;

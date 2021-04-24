@@ -18,18 +18,17 @@ class Definition {
 }
 
 public class LLVMActions implements NobleScriptListener {
-    private Set<Definition> globalDefs= new HashSet<>();
+    private final Map<String, Map<String, Definition>> functionDefs = new HashMap<>();
+    private final Stack<String> functionStack = new Stack<>();
 
-    private Map<String, Map<String, Definition>> functionDefs = new HashMap<>();
-    private Stack<String> functionStack = new Stack<>();
+    private final LLVMGenerator generator;
 
-    private LLVMGenerator generator;
-
-    private int logLevel;
+    private final int logLevel;
 
     public LLVMActions(LLVMGenerator generator, int logLevel) {
         this.generator = generator;
         this.logLevel = logLevel;
+        functionDefs.put("", new HashMap<>());
     }
 
     @Override
@@ -99,47 +98,76 @@ public class LLVMActions implements NobleScriptListener {
         final String newFunId = ctx.ID(0).getText();
         final Definition newFunDef = new Definition(newFunId, newFunType, DefinitionType.FUNCTION);
 
-        final String lastFunStackId = functionStack.empty() ? "" : functionStack.peek() + ".";
-        final String functionStackId= lastFunStackId + newFunId;
+        final String scopeId = functionStack.empty() ? "" : functionStack.peek();
+        final String newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
 
         // Check if there's a function of the same stackId
-        if(functionDefs.containsKey(functionStackId)){
-            throw new IllegalStateException("Function was already defined: " + functionStackId);
-        }
-        // check if there's a variable of the same id
-        if(functionDefs.containsKey(lastFunStackId)){
-            if(functionDefs.get(lastFunStackId).containsKey(newFunId)){
-                throw new IllegalStateException("Id was already defined: " + newFunId);
-            }
+        if (functionDefs.containsKey(newScopeId)) {
+            throw new IDAlreadyDefinedException(newFunId, scopeId);
         }
 
-        functionDefs.put(functionStackId, new HashMap<>());
-        functionStack.push(functionStackId);
+        // Add function definition to its scope
+        if (functionDefs.containsKey(scopeId)) {
+            // Check if the ID already exists in the scope
+            if (functionDefs.get(scopeId).containsKey(newFunId)) {
+                throw new IDAlreadyDefinedException(newFunId, scopeId);
+            }
+
+            functionDefs.get(scopeId).put(newFunId, newFunDef);
+        } else {
+            throw new IllegalStateException("Unable to check if ID {" + newFunId + "} was defined in scope P" + scopeId + "}");
+        }
+
+        functionDefs.put(newScopeId, new HashMap<>());
+        functionStack.push(newScopeId);
+
+        // TODO add LLVMGenerator actions
     }
 
     @Override
     public void exitFunction_definition(NobleScriptParser.Function_definitionContext ctx) {
         log("on exitFunction_definition");
         functionStack.pop();
+
+        // TODO add LLVMGenerator actions
     }
 
     @Override
     public void enterVariable_definition(NobleScriptParser.Variable_definitionContext ctx) {
         log("on enterVariable_definition");
+        final VarType newVarType = VarType.getType(ctx.type().getText());
+        final String newVarId = ctx.assign_statement().ID().getText();
+        final Definition newVarDef = new Definition(newVarId, newVarType, DefinitionType.VARIABLE);
 
+        // Check function scope
+        final String scopeId = functionStack.empty() ? "" : functionStack.peek();
+        if (functionDefs.containsKey(scopeId)) {
+            if (functionDefs.get(scopeId).containsKey(newVarId)) {
+                throw new IDAlreadyDefinedException(newVarId, scopeId);
+            }
+        } else {
+            throw new IllegalStateException("Cannot define variable: " + newVarId + " for function: " + scopeId);
+        }
+
+        functionDefs.get(scopeId).put(newVarId, newVarDef);
     }
 
     @Override
     public void exitVariable_definition(NobleScriptParser.Variable_definitionContext ctx) {
         log("on exitVariable_definition");
-//        if (globalIds) {
-//            ctx.type()
-//        }
-//        String id = ctx.assign_statement().ID().getText();
-//        String value = ctx.assign_statement().expression().value().getText();
-//
-//        generator.declare_i32(id, functionStack.empty());
-//        generator.assign_i32(id, value, functionStack.empty(), );
+        final boolean isGlobal = functionStack.empty();
+        final String id = ctx.assign_statement().ID().getText();
+        final String value = ctx.assign_statement().expression().value().literal().primitive_literal().INT_LITERAL().getText();
+
+        // TODO add more types
+        switch(VarType.getType(ctx.type().getText())){
+            case INT:
+                generator.declare_i32(id, isGlobal);
+                generator.assign_i32(id, value, isGlobal);
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
