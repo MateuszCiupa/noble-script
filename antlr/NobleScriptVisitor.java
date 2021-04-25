@@ -1,4 +1,4 @@
-// Generated from //wsl$/Ubuntu-20.04/home/ciupam/repos/noble-script/src\NobleScript.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Danie/Desktop/noble-script/src\NobleScript.g4 by ANTLR 4.9.1
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -58,6 +58,12 @@ public interface NobleScriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVariable_definition(NobleScriptParser.Variable_definitionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link NobleScriptParser#array_definition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArray_definition(NobleScriptParser.Array_definitionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link NobleScriptParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -93,6 +99,12 @@ public interface NobleScriptVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitValue(NobleScriptParser.ValueContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NobleScriptParser#array_index}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArray_index(NobleScriptParser.Array_indexContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NobleScriptParser#function_call_stm}.
 	 * @param ctx the parse tree
@@ -147,35 +159,17 @@ public interface NobleScriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNull(NobleScriptParser.NullContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NobleScriptParser#array_literal}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArray_literal(NobleScriptParser.Array_literalContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link NobleScriptParser#type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitType(NobleScriptParser.TypeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NobleScriptParser#array_type}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArray_type(NobleScriptParser.Array_typeContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link NobleScriptParser#primitive_type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitPrimitive_type(NobleScriptParser.Primitive_typeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link NobleScriptParser#operator3}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOperator3(NobleScriptParser.Operator3Context ctx);
 	/**
 	 * Visit a parse tree produced by {@link NobleScriptParser#operator2}.
 	 * @param ctx the parse tree

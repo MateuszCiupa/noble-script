@@ -14,11 +14,13 @@ return_statement: RETURN expression;
 definition: variable_definition SEMICOL
           | structure_definition
           | function_definition
+          | array_definition SEMICOL
           ;
 
 structure_definition: 'struct' ID BRACES_OPEN (variable_definition SEMICOL)+ BRACES_CLOSE;
 function_definition: type ID PAR_OPEN (type ID)?(',' type ID)* PAR_CLOSE BRACES_OPEN statement* BRACES_CLOSE;
 variable_definition: type ID ASSIGN_OP expression;
+array_definition: type ID BRACKET_OPEN INT_LITERAL BRACKET_CLOSE;
 
 expression : expression0;
 
@@ -31,19 +33,18 @@ expression3 : PAR_OPEN expression0 PAR_CLOSE
 value: literal
      | function_call_stm
      | ID
+     | array_index
      ;
+
+array_index: ID BRACKET_OPEN INT_LITERAL BRACKET_CLOSE;
 
 function_call_stm: ID '(' (expression)? (','expression)* ')' | READ | print_stm;
 print_stm: 'print(' expression ')';
 
-literal: primitive_literal | array_literal;
+literal: primitive_literal;
 primitive_literal: BOOLEAN_LITERAL #boolean | INT_LITERAL #int | DOUBLE_LITERAL #double | STRING_LITERAL #string | NULL #null;
-array_literal: primitive_type ARRAY_SIZE_LITERAL;
 
-type: primitive_type
-    | array_type
-    ;
-array_type: primitive_type '[]';
+type: primitive_type;
 
 primitive_type: BOOLEAN_TYPE | INT_TYPE | DOUBLE_TYPE | STRING_TYPE | NULL;
 
@@ -68,14 +69,13 @@ PAR_CLOSE: ')';
 BRACES_OPEN: '{';
 BRACES_CLOSE: '}';
 BRACKET_OPEN: '[';
-BRAKCET_CLOSE: ']';
+BRACKET_CLOSE: ']';
 
 NULL: 'null';
 INT_LITERAL: '-'?[1-9]+[0-9]*;
 DOUBLE_LITERAL: '-'?[1-9]+[0-9]*'.'[0-9]+;
 BOOLEAN_LITERAL: 'true' | 'false';
 STRING_LITERAL: '"'[^"]*'"';
-ARRAY_SIZE_LITERAL: '['[1-9]+[0-9]*']';
 
 BOOLEAN_TYPE: 'boolean';
 INT_TYPE: 'int';

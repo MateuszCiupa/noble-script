@@ -208,6 +208,16 @@ public class LLVMActions implements NobleScriptListener {
     }
 
     @Override
+    public void enterArray_definition(NobleScriptParser.Array_definitionContext ctx) {
+        log("on enterArray_definition");
+    }
+
+    @Override
+    public void exitArray_definition(NobleScriptParser.Array_definitionContext ctx) {
+        log("on exitArray_definition");
+    }
+
+    @Override
     public void enterExpression(NobleScriptParser.ExpressionContext ctx) {
         log("on enterExpression");
     }
@@ -370,6 +380,16 @@ public class LLVMActions implements NobleScriptListener {
     }
 
     @Override
+    public void enterArray_index(NobleScriptParser.Array_indexContext ctx) {
+        log("on enterArray_index");
+    }
+
+    @Override
+    public void exitArray_index(NobleScriptParser.Array_indexContext ctx) {
+        log("on exitArray_index");
+    }
+
+    @Override
     public void enterFunction_call_stm(NobleScriptParser.Function_call_stmContext ctx) {
         log("on enterFunction_call_stm");
     }
@@ -464,16 +484,6 @@ public class LLVMActions implements NobleScriptListener {
     }
 
     @Override
-    public void enterArray_literal(NobleScriptParser.Array_literalContext ctx) {
-        log("on enterArray_literal");
-    }
-
-    @Override
-    public void exitArray_literal(NobleScriptParser.Array_literalContext ctx) {
-        log("on exitArray_literal");
-    }
-
-    @Override
     public void enterType(NobleScriptParser.TypeContext ctx) {
         log("on enterType");
     }
@@ -484,16 +494,6 @@ public class LLVMActions implements NobleScriptListener {
     }
 
     @Override
-    public void enterArray_type(NobleScriptParser.Array_typeContext ctx) {
-        log("on enterArray_type");
-    }
-
-    @Override
-    public void exitArray_type(NobleScriptParser.Array_typeContext ctx) {
-        log("on exitArray_type");
-    }
-
-    @Override
     public void enterPrimitive_type(NobleScriptParser.Primitive_typeContext ctx) {
         log("on enterPrimitive_type");
     }
@@ -501,16 +501,6 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitPrimitive_type(NobleScriptParser.Primitive_typeContext ctx) {
         log("on exitPrimitive_type");
-    }
-
-    @Override
-    public void enterOperator3(NobleScriptParser.Operator3Context ctx) {
-        log("on enterOperator3");
-    }
-
-    @Override
-    public void exitOperator3(NobleScriptParser.Operator3Context ctx) {
-        log("on exitOperator3");
     }
 
     @Override

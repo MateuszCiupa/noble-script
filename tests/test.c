@@ -1,16 +1,12 @@
-int mojGlobalInt;
-int mojGlobalInt1 = 213;
-int mojGlobalInt2 = 213;
-int mojGlobalInt3;
-double mojGlobalFlaot = 20.0;
-
-
-double naszaFunkcjaOddajeFloat(){
-    int a = 69;
-    int b = 420 + a;
-    return b;
- }
+int mojGlobalArray[777];
+int mojGlobalInt = 666;
 
 int main (){
-    return 5;
+    int a = 2;
+    int mojLocalArray[333];
+//    int mojLocalInt = 222;
+
+    mojLocalArray[2] = 69;
+//    int myNextLocalInt = mojLocalArray[2];
+
 }
