@@ -1,6 +1,8 @@
 int i = 5;
 i = 10;
 int ala() {
+    double local = 2.0 + 2.0;
+    double local2 = 2.0 + local;
     print(i);
     i = (2 + 2) * 2;
     print(i);
