@@ -1,9 +1,6 @@
-int i =2;
-int ala() {
-    print(2.0 + (2.0 * 3.0) / 2);
-    print(i);
-    i = (2 + 2) * 2;
-    i = 4 * 2;
-    print(i);
-    print(1);
+int ala[10];
+
+int fun() {
+    int dupa[5];
+    dupa[3] = 5;
 }

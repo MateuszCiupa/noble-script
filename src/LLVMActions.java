@@ -1,4 +1,5 @@
 import exceptions.*;
+import meta.ArrayDefinition;
 import meta.Definition;
 import meta.Value;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -62,7 +63,7 @@ public class LLVMActions implements NobleScriptListener {
         // Check if variable was defined in function scopes
         Definition varDef = getVarDefinition(varId);
 
-        if (varDef.defType != DefinitionType.VARIABLE) {
+        if (varDef.defType != DefinitionType.VARIABLE && varDef.defType != DefinitionType.ARRAY) {
             throw new IDFinalException(varId);
         }
 
@@ -72,7 +73,14 @@ public class LLVMActions implements NobleScriptListener {
                 if (varDef.type != VarType.INT) {
                     throw new InvalidAssignmentException(varDef, value);
                 }
-                generator.assign_i32(varId, value.content, varDef.isGlobal);
+                // ARRAY ASSIGN STATEMENT
+                if (ctx.INT_LITERAL() != null) {
+                    int index = Integer.parseInt(ctx.INT_LITERAL().getText());
+                    int size = ((ArrayDefinition)varDef).size;
+                    generator.assign_i32_array(varId, size, index, varDef.isGlobal, value.content);
+                } else {
+                    generator.assign_i32(varId, value.content, varDef.isGlobal);
+                }
                 break;
             case VALUE_DOUBLE:
             case VALUE_DOUBLE_REGISTER:
@@ -103,9 +111,7 @@ public class LLVMActions implements NobleScriptListener {
     }
 
     @Override
-    public void exitDefinition(NobleScriptParser.DefinitionContext ctx) {
-        log("on exitDefinition");
-    }
+    public void exitDefinition(NobleScriptParser.DefinitionContext ctx) {}
 
     @Override
     public void enterStructure_definition(NobleScriptParser.Structure_definitionContext ctx) {
@@ -132,18 +138,9 @@ public class LLVMActions implements NobleScriptListener {
             throw new IDAlreadyDefinedException(newFunId, scopeId);
         }
 
-        // Add function definition to its scope
-        if (functionDefs.containsKey(scopeId)) {
-            // Check if the ID already exists in the scope
-            if (functionDefs.get(scopeId).containsKey(newFunId)) {
-                throw new IDAlreadyDefinedException(newFunId, scopeId);
-            }
+        verifyIdIsAvailableInCurrentScope(newFunId);
 
-            functionDefs.get(scopeId).put(newFunId, newFunDef);
-        } else {
-            throw new IllegalStateException("Unable to check if ID {" + newFunId + "} was defined in scope P" + scopeId + "}");
-        }
-
+        functionDefs.get(scopeId).put(newFunId, newFunDef);
         functionDefs.put(newScopeId, new HashMap<>());
         functionStack.push(newScopeId);
 
@@ -167,13 +164,7 @@ public class LLVMActions implements NobleScriptListener {
 
         // Check function scope
         final String scopeId = functionStack.empty() ? GLOBAL_SCOPE_STACK_ID : functionStack.peek();
-        if (functionDefs.containsKey(scopeId)) {
-            if (functionDefs.get(scopeId).containsKey(newVarId)) {
-                throw new IDAlreadyDefinedException(newVarId, scopeId);
-            }
-        } else {
-            throw new IllegalStateException("Cannot define variable: " + newVarId + " for function: " + scopeId);
-        }
+        verifyIdIsAvailableInCurrentScope(newVarId);
 
         functionDefs.get(scopeId).put(newVarId, newVarDef);
     }
@@ -210,11 +201,24 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterArray_definition(NobleScriptParser.Array_definitionContext ctx) {
         log("on enterArray_definition");
+        final VarType newArrayType = VarType.getType(ctx.type().getText());
+        final String newArrayId = ctx.ID().getText();
+        final int newArraySize = Integer.parseInt(ctx.INT_LITERAL().getText());
+        final Definition newArrayDef = new ArrayDefinition(newArrayId, newArrayType, DefinitionType.ARRAY, functionStack.isEmpty(), newArraySize);
+
+        // Check function scope
+        final String scopeId = functionStack.empty() ? GLOBAL_SCOPE_STACK_ID : functionStack.peek();
+        verifyIdIsAvailableInCurrentScope(newArrayId);
+
+        functionDefs.get(scopeId).put(newArrayId, newArrayDef);
+
+        generator.declare_i32_array(newArrayId, newArraySize, functionStack.empty());
     }
 
     @Override
     public void exitArray_definition(NobleScriptParser.Array_definitionContext ctx) {
         log("on exitArray_definition");
+
     }
 
     @Override
@@ -375,6 +379,10 @@ public class LLVMActions implements NobleScriptListener {
             valueStack.push(value);
         } else if (ctx.function_call_stm() != null) {
             // TODO implement functions calls
+            throw new UnsupportedOperationException();
+        } else if (ctx.array_index() != null) {
+            final String arrayId = ctx.array_index().ID().getText();
+            // TODO implement array index call
             throw new UnsupportedOperationException();
         }
     }
@@ -611,6 +619,18 @@ public class LLVMActions implements NobleScriptListener {
             return functionDefs.get(GLOBAL_SCOPE_STACK_ID).get(varId);
         } else {
             throw new IDNotDefinedException(varId);
+        }
+    }
+
+    private void verifyIdIsAvailableInCurrentScope(String id) {
+        // Check function scope
+        final String scopeId = functionStack.empty() ? GLOBAL_SCOPE_STACK_ID : functionStack.peek();
+        if (functionDefs.containsKey(scopeId)) {
+            if (functionDefs.get(scopeId).containsKey(id)) {
+                throw new IDAlreadyDefinedException(id, scopeId);
+            }
+        } else {
+            throw new IllegalStateException("ID {" + id + "} is not accessible in current scope {" + scopeId + "}");
         }
     }
 

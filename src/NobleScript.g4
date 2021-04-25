@@ -8,7 +8,9 @@ statement: compound_statement
          | assign_statement SEMICOL
          | return_statement SEMICOL
          ;
-assign_statement: ID ASSIGN_OP expression;
+assign_statement: ID ASSIGN_OP expression
+                | ID BRACKET_OPEN INT_LITERAL BRACKET_CLOSE ASSIGN_OP expression
+                ;
 return_statement: RETURN expression;
 
 definition: variable_definition SEMICOL

@@ -64,10 +64,68 @@ public class LLVMGenerator {
     }
 
     /**
+     * Array
+     */
+    public void declare_i32_array(String id, int size, boolean isGlobal) {
+        if (isGlobal) {
+            header.append("@")
+                    .append(id)
+                    .append(" = common dso_local global [")
+                    .append(size)
+                    .append(" x i32] zeroinitializer, align 16\n");
+        } else {
+            buffer.append("%")
+                    .append(id)
+                    .append(" = alloca [")
+                    .append(size)
+                    .append(" x i32], align 16\n");
+        }
+    }
+
+    public void load_i32_array_index(String id, int size, int index, boolean isGlobal) {
+        buffer.append("%")
+                .append(register++)
+                .append(" = getelementptr inbounds [")
+                .append(size)
+                .append(" x i32],[")
+                .append(size)
+                .append(" x i32]* ")
+                .append(isGlobal ? "@" : "%")
+                .append(id)
+                .append(", i64 0, i64 ")
+                .append(index)
+                .append("\n");
+        buffer.append("%")
+                .append(register++)
+                .append(" = load i32, i32* %")
+                .append(register - 2).append(", align 4\n");
+    }
+
+    public void assign_i32_array(String id, int size, int index, boolean isGlobal, String value) {
+        buffer.append("%")
+                .append(register++)
+                .append(" = getelementptr inbounds [")
+                .append(size)
+                .append(" x i32],[")
+                .append(size)
+                .append(" x i32]* ")
+                .append(isGlobal ? "@" : "%")
+                .append(id)
+                .append(", i64 0, i64 ")
+                .append(index)
+                .append("\n");
+        buffer.append("store i32 ")
+                .append(value)
+                .append(", i32* %")
+                .append(register - 1)
+                .append("\n");
+    }
+
+    /**
      * i32, INT
      */
-    public void declare_i32(String id, boolean global) {
-        if (global) {
+    public void declare_i32(String id, boolean isGlobal) {
+        if (isGlobal) {
             header.append("@")
                     .append(id)
                     .append(" = global i32 0\n");

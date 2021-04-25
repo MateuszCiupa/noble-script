@@ -6,22 +6,10 @@ declare i32 @scanf(i8*, ...)
 @strsi = constant [3 x i8] c"%d\00"
 @strsd = constant [4 x i8] c"%lf\00"
 
-@i = global i32 0
+@ala = common dso_local global [10 x i32] zeroinitializer, align 16
 define i32 @main() nounwind {
-  store i32 2, i32* @i
-  %1 = fmul double 2.0, 3.0
-  %2 = fdiv double %1, 2.0
-  %3 = fadd double 2.0, %2
-  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %3)
-  %5 = load i32, i32* @i
-  %6 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %5)
-  %7 = add i32 2, 2
-  %8 = mul i32 %7, 2
-  store i32 %8, i32* @i
-  %9 = mul i32 4, 2
-  store i32 %9, i32* @i
-  %10 = load i32, i32* @i
-  %11 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %10)
-  %12 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 1)
+  %dupa = alloca [5 x i32], align 16
+  %1 = getelementptr inbounds [5 x i32],[5 x i32]* %dupa, i64 0, i64 3
+  store i32 5, i32* %1
   ret i32 0
 }

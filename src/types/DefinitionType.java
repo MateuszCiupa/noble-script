@@ -1,5 +1,5 @@
 package types;
 
 public enum DefinitionType {
-    FUNCTION, VARIABLE
+    FUNCTION, VARIABLE, ARRAY
 }
