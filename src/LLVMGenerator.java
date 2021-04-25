@@ -36,12 +36,31 @@ public class LLVMGenerator {
     /**
      * printing
      */
-    public void print_i32_from_register(String content) {
+    public void print_i32(String content) {
         buffer.append("%")
                 .append(register++)
                 .append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 ")
                 .append(content)
                 .append(")\n");
+    }
+
+    public void printf_double(String content) {
+        buffer.append("%")
+                .append(register++)
+                .append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double ")
+                .append(content)
+                .append(")\n");
+//        buffer.append("%")
+//                .append(register++)
+//                .append(" = load double, double* ")
+//                .append(isGlobal ? "@" : "%")
+//                .append(id)
+//                .append("\n")
+//                .append("%")
+//                .append(register++)
+//                .append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %")
+//                .append(register - 1)
+//                .append(")\n");
     }
 
     /**
@@ -71,58 +90,50 @@ public class LLVMGenerator {
     public void assign_i32(String id, String value, boolean global) {
         buffer.append("store i32 ")
                 .append(value)
-                .append(", i32* ");
-        if (global) {
-            buffer.append("@");
-        } else {
-            buffer.append("%");
-        }
-        buffer.append(id)
+                .append(", i32* ")
+                .append(global ? "@" : "%")
+                .append(id)
                 .append("\n");
     }
 
     public void add_i32(String val1, String val2) {
         buffer.append("%")
-                .append(register)
+                .append(register++)
                 .append(" = add i32 ")
                 .append(val1)
                 .append(", ")
                 .append(val2)
                 .append("\n");
-        register++;
     }
 
 
     public void sub_i32(String val1, String val2) {
         buffer.append("%")
-                .append(register)
+                .append(register++)
                 .append(" = sub i32 ")
                 .append(val1).append(", ")
                 .append(val2)
                 .append("\n");
-        register++;
     }
 
     public void mul_i32(String val1, String val2) {
         buffer.append("%")
-                .append(register)
+                .append(register++)
                 .append(" = mul i32 ")
                 .append(val1)
                 .append(", ")
                 .append(val2)
                 .append("\n");
-        register++;
     }
 
     public void div_i32(String val1, String val2) {
         buffer.append("%")
-                .append(register)
+                .append(register++)
                 .append(" = sdiv i32 ")
                 .append(val1)
                 .append(", ")
                 .append(val2)
                 .append("\n");
-        register++;
     }
 
     /**

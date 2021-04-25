@@ -254,18 +254,18 @@ public class LLVMActions implements NobleScriptListener {
                 case VALUE_INT:
                 case VALUE_INT_REGISTER:
                     if (ctx.operator1().MINUS_OP() != null) {
-                        generator.sub_i32(right.content, left.content);
+                        generator.sub_i32(left.content, right.content);
                     } else {
-                        generator.add_i32(right.content, left.content);
+                        generator.add_i32(left.content, right.content);
                     }
                     result = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     break;
                 case VALUE_DOUBLE:
                 case VALUE_DOUBLE_REGISTER:
                     if (ctx.operator1().MINUS_OP() != null) {
-                        generator.sub_double(right.content, left.content);
+                        generator.sub_double(left.content, right.content);
                     } else {
-                        generator.add_double(right.content, left.content);
+                        generator.add_double(left.content, right.content);
                     }
                     result = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
                     break;
@@ -303,18 +303,18 @@ public class LLVMActions implements NobleScriptListener {
                 case VALUE_INT:
                 case VALUE_INT_REGISTER:
                     if (ctx.operator2().DIV_OP() != null) {
-                        generator.div_i32(right.content, left.content);
+                        generator.div_i32(left.content, right.content);
                     } else {
-                        generator.mul_i32(right.content, left.content);
+                        generator.mul_i32(left.content, right.content);
                     }
                     result = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     break;
                 case VALUE_DOUBLE:
                 case VALUE_DOUBLE_REGISTER:
                     if (ctx.operator2().DIV_OP() != null) {
-                        generator.div_double(right.content, left.content);
+                        generator.div_double(left.content, right.content);
                     } else {
-                        generator.mul_double(right.content, left.content);
+                        generator.mul_double(left.content, right.content);
                     }
                     result = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
                     break;
@@ -389,8 +389,10 @@ public class LLVMActions implements NobleScriptListener {
         log("on exitPrint_stm");
         // TODO handle more types
         Value value = valueStack.pop();
-        if (value.type == VALUE_INT_REGISTER) {
-            generator.print_i32_from_register(value.content);
+        if (value.type == VALUE_INT_REGISTER || value.type == VALUE_INT) {
+            generator.print_i32(value.content);
+        } else if (value.type == VALUE_DOUBLE || value.type == VALUE_DOUBLE_REGISTER) {
+            generator.printf_double(value.content);
         } else {
             throw new UnsupportedOperationException();
         }
