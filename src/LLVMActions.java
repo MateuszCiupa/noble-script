@@ -1,4 +1,5 @@
 import exceptions.IDAlreadyDefinedException;
+import exceptions.IDFinalException;
 import exceptions.IDNotDefinedException;
 import exceptions.TypeMismatchException;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -80,6 +81,48 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitAssign_statement(NobleScriptParser.Assign_statementContext ctx) {
         log("on exitAssign_statement");
+        final String varId = ctx.ID().getText();
+        boolean isGlobal = false;
+
+        // Check if variable was defined in function scopes
+        final String scopeId = functionStack.empty() ? "" : functionStack.peek();
+        String[] scopes = scopeId.split("\\.");
+        Definition varDef = null;
+        for (int i = 1; i < scopes.length; i++) {
+            scopes[i] = scopes[i - 1] + "." + scopes[i];
+        }
+        for (int i = scopes.length - 1; i >= 0; i--) {
+            if (functionDefs.get(scopes[i]).containsKey(varId)) {
+                varDef = functionDefs.get(scopes[i]).get(varId);
+                isGlobal = scopes[i].equals(GLOBAL_SCOPE_STACK_ID);
+                break;
+            }
+        }
+
+        // Check global scope if varDef still null
+        if (varDef == null) {
+            if (functionDefs.get(GLOBAL_SCOPE_STACK_ID).containsKey(varId)) {
+                varDef = functionDefs.get(GLOBAL_SCOPE_STACK_ID).get(varId);
+                isGlobal = true;
+            } else {
+                throw new IDNotDefinedException(varId);
+            }
+        }
+
+        if (varDef.defType != DefinitionType.VARIABLE) {
+            throw new IDFinalException(varId);
+        }
+
+        final Value value = valueStack.pop();
+        switch (value.type) {
+            case VALUE_INT:
+            case VALUE_INT_REGISTER:
+                generator.assign_i32(varId, value.content, isGlobal);
+                break;
+            default:
+                // TODO add more types
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
@@ -157,7 +200,7 @@ public class LLVMActions implements NobleScriptListener {
     public void enterVariable_definition(NobleScriptParser.Variable_definitionContext ctx) {
         log("on enterVariable_definition");
         final VarType newVarType = VarType.getType(ctx.type().getText());
-        final String newVarId = ctx.assign_statement().ID().getText();
+        final String newVarId = ctx.ID().getText();
         final Definition newVarDef = new Definition(newVarId, newVarType, DefinitionType.VARIABLE);
 
         //TODO more types
@@ -179,12 +222,12 @@ public class LLVMActions implements NobleScriptListener {
     public void exitVariable_definition(NobleScriptParser.Variable_definitionContext ctx) {
         log("on exitVariable_definition");
         final boolean isGlobal = functionStack.empty();
-        final String id = ctx.assign_statement().ID().getText();
+        final String id = ctx.ID().getText();
 
         final Value value = valueStack.pop();
         switch (value.type) {
             case VALUE_INT:
-            case VALUE_REGISTER:
+            case VALUE_INT_REGISTER:
                 generator.declare_i32(id, isGlobal);
                 generator.assign_i32(id, value.content, isGlobal);
                 break;
@@ -252,7 +295,7 @@ public class LLVMActions implements NobleScriptListener {
                     } else {
                         generator.mul_i32(right.content, left.content);
                     }
-                    Value result = new Value("%" + (generator.getRegister() - 1), VALUE_REGISTER);
+                    Value result = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     valueStack.push(result);
                     break;
                 default:
@@ -281,39 +324,36 @@ public class LLVMActions implements NobleScriptListener {
     public void exitValue(NobleScriptParser.ValueContext ctx) {
         log("on exitValue");
         if (ctx.ID() != null) {
-            final String valueID = ctx.ID().getText();
+            final String valueId = ctx.ID().getText();
 
-            Definition variableDefinition = null;
+            Definition varDef = null;
             boolean isGlobal = false;
 
-            // Check if variable was defined in function scopes
+            // Check if variable was defined in any scope
             final String scopeId = functionStack.empty() ? "" : functionStack.peek();
             String[] scopes = scopeId.split("\\.");
             for (int i = 1; i < scopes.length; i++) {
                 scopes[i] = scopes[i - 1] + "." + scopes[i];
             }
             for (int i = scopes.length - 1; i >= 0; i--) {
-                if (scopes[i].equals(GLOBAL_SCOPE_STACK_ID)) continue;
-                if (functionDefs.get(scopes[i]).containsKey(valueID)) {
-                    variableDefinition = functionDefs.get(scopes[i]).get(valueID);
-                    isGlobal = false;
+                if (functionDefs.get(scopes[i]).containsKey(valueId)) {
+                    varDef = functionDefs.get(scopes[i]).get(valueId);
+                    isGlobal = scopes[i].equals(GLOBAL_SCOPE_STACK_ID);
                     break;
                 }
             }
 
-            // Check if variable was defined in global scope
-            if (variableDefinition == null) {
-                if (functionDefs.get(GLOBAL_SCOPE_STACK_ID).containsKey(ctx.ID().getText())) {
-                    variableDefinition = functionDefs.get(GLOBAL_SCOPE_STACK_ID).get(valueID);
+            // Check global scope if varDef still null
+            if (varDef == null ) {
+                if (functionDefs.get(GLOBAL_SCOPE_STACK_ID).containsKey(valueId)) {
+                    varDef = functionDefs.get(GLOBAL_SCOPE_STACK_ID).get(valueId);
                     isGlobal = true;
+                } else {
+                    throw new IDNotDefinedException(valueId);
                 }
             }
 
-            if (variableDefinition == null) {
-                throw new IDNotDefinedException(valueID);
-            }
-
-            Value value = new Value(getValueContent(variableDefinition, isGlobal), VALUE_REGISTER);
+            Value value = new Value(getValueContent(varDef, isGlobal), VALUE_INT_REGISTER);
             valueStack.push(value);
         } else if (ctx.function_call_stm() != null) {
             // TODO implement functions calls
@@ -341,7 +381,7 @@ public class LLVMActions implements NobleScriptListener {
         log("on exitPrint_stm");
         // TODO handle more types
         Value value = valueStack.pop();
-        if (value.type == VALUE_REGISTER) {
+        if (value.type == VALUE_INT_REGISTER) {
             generator.print_i32_from_register(value.content);
         } else {
             throw new UnsupportedOperationException();
@@ -548,6 +588,8 @@ public class LLVMActions implements NobleScriptListener {
             throw new UnsupportedOperationException();
         }
     }
+
+
 
     private void log(String msg) {
         if (logLevel > 0) System.out.println(msg);

@@ -18,7 +18,7 @@ definition: variable_definition SEMICOL
 
 structure_definition: 'struct' ID BRACES_OPEN (variable_definition SEMICOL)+ BRACES_CLOSE;
 function_definition: type ID PAR_OPEN (type ID)?(',' type ID)* PAR_CLOSE BRACES_OPEN statement* BRACES_CLOSE;
-variable_definition: type assign_statement;
+variable_definition: type ID ASSIGN_OP expression;
 
 expression : expression0;
 
