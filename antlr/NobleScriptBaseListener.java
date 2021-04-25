@@ -123,6 +123,54 @@ public class NobleScriptBaseListener implements NobleScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExpression0(NobleScriptParser.Expression0Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression0(NobleScriptParser.Expression0Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpression1(NobleScriptParser.Expression1Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression1(NobleScriptParser.Expression1Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpression2(NobleScriptParser.Expression2Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression2(NobleScriptParser.Expression2Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpression3(NobleScriptParser.Expression3Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression3(NobleScriptParser.Expression3Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterValue(NobleScriptParser.ValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -171,13 +219,61 @@ public class NobleScriptBaseListener implements NobleScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPrimitive_literal(NobleScriptParser.Primitive_literalContext ctx) { }
+	@Override public void enterBoolean(NobleScriptParser.BooleanContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPrimitive_literal(NobleScriptParser.Primitive_literalContext ctx) { }
+	@Override public void exitBoolean(NobleScriptParser.BooleanContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInt(NobleScriptParser.IntContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInt(NobleScriptParser.IntContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDouble(NobleScriptParser.DoubleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDouble(NobleScriptParser.DoubleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterString(NobleScriptParser.StringContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitString(NobleScriptParser.StringContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNull(NobleScriptParser.NullContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNull(NobleScriptParser.NullContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -231,13 +327,49 @@ public class NobleScriptBaseListener implements NobleScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOperator(NobleScriptParser.OperatorContext ctx) { }
+	@Override public void enterOperator3(NobleScriptParser.Operator3Context ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitOperator(NobleScriptParser.OperatorContext ctx) { }
+	@Override public void exitOperator3(NobleScriptParser.Operator3Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOperator2(NobleScriptParser.Operator2Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOperator2(NobleScriptParser.Operator2Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOperator1(NobleScriptParser.Operator1Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOperator1(NobleScriptParser.Operator1Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOperator0(NobleScriptParser.Operator0Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOperator0(NobleScriptParser.Operator0Context ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

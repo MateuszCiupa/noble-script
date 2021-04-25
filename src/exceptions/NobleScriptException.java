@@ -1,5 +1,7 @@
+package exceptions;
+
 public class NobleScriptException extends RuntimeException {
-    NobleScriptException(String msg) {
+    public NobleScriptException(String msg) {
         super(msg);
     }
 }

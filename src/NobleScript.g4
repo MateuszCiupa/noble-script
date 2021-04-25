@@ -18,21 +18,26 @@ definition: variable_definition SEMICOL
 
 structure_definition: 'struct' ID BRACES_OPEN (variable_definition SEMICOL)+ BRACES_CLOSE;
 function_definition: type ID PAR_OPEN (type ID)?(',' type ID)* PAR_CLOSE BRACES_OPEN statement* BRACES_CLOSE;
-variable_definition: type assign_statement;
+variable_definition: type ID ASSIGN_OP expression;
 
-expression : value
-           | expression operator expression
-           | PAR_OPEN expression PAR_CLOSE
-           ;
+expression : expression0;
+
+expression0 : expression1 | expression1 operator0 expression1;
+expression1 : expression2 | expression2 operator1 expression2;
+expression2 : expression3 | expression3 operator2 expression3;
+expression3 : PAR_OPEN expression0 PAR_CLOSE
+            | value;
+
 value: literal
      | function_call_stm
      | ID
      ;
+
 function_call_stm: ID '(' (expression)? (','expression)* ')' | READ | print_stm;
 print_stm: 'print(' expression ')';
 
 literal: primitive_literal | array_literal;
-primitive_literal: BOOLEAN_LITERAL | INT_LITERAL | DOUBLE_LITERAL | STRING_LITERAL | NULL;
+primitive_literal: BOOLEAN_LITERAL #boolean | INT_LITERAL #int | DOUBLE_LITERAL #double | STRING_LITERAL #string | NULL #null;
 array_literal: primitive_type ARRAY_SIZE_LITERAL;
 
 type: primitive_type
@@ -42,7 +47,9 @@ array_type: primitive_type '[]';
 
 primitive_type: BOOLEAN_TYPE | INT_TYPE | DOUBLE_TYPE | STRING_TYPE | NULL;
 
-operator: PLUS_OP | MINUS_OP | POW_OP | DIV_OP | MUL_OP | LESSER_THAN_OP | GREATER_THAN_OP | EQUAL_OP | NOT_EQUAL_OP;
+operator2: DIV_OP | MUL_OP;
+operator1: PLUS_OP | MINUS_OP;
+operator0: LESSER_THAN_OP | GREATER_THAN_OP | EQUAL_OP | NOT_EQUAL_OP;
 
 compound_statement: if_statement | loop_statement;
 loop_statement: WHILE PAR_OPEN expression PAR_CLOSE BRACES_OPEN statement* BRACES_CLOSE;
