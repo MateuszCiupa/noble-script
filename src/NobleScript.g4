@@ -47,7 +47,6 @@ array_type: primitive_type '[]';
 
 primitive_type: BOOLEAN_TYPE | INT_TYPE | DOUBLE_TYPE | STRING_TYPE | NULL;
 
-operator3: POW_OP;
 operator2: DIV_OP | MUL_OP;
 operator1: PLUS_OP | MINUS_OP;
 operator0: LESSER_THAN_OP | GREATER_THAN_OP | EQUAL_OP | NOT_EQUAL_OP;

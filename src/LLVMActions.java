@@ -266,6 +266,36 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitExpression1(NobleScriptParser.Expression1Context ctx) {
         log("on exitExpression1");
+
+        if (ctx.operator1() != null) {
+            Value right = valueStack.pop();
+            Value left = valueStack.pop();
+
+            // TODO Type casting
+            // Check variable types
+            if (right.type.notEquals(left.type)) {
+                TerminalNode token = ctx.operator1().MINUS_OP();
+                if (token == null) token = ctx.operator1().PLUS_OP();
+                throw new TypeMismatchException("Invalid type at line: " + token.getSymbol().getLine());
+            }
+
+            final Value result;
+            switch (right.type) {
+                case VALUE_INT:
+                case VALUE_INT_REGISTER:
+                    if (ctx.operator1().MINUS_OP() != null) {
+                        generator.sub_i32(right.content, left.content);
+                    } else {
+                        generator.add_i32(right.content, left.content);
+                    }
+                    result = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
+                    break;
+                default:
+                    //TODO more types
+                    throw new UnsupportedOperationException();
+            }
+            valueStack.push(result);
+        }
     }
 
     @Override
@@ -282,26 +312,29 @@ public class LLVMActions implements NobleScriptListener {
             Value left = valueStack.pop();
 
             // TODO Type casting
-            if (right.type != left.type) {
+            // Check variable types
+            if (right.type.notEquals(left.type)) {
                 TerminalNode token = ctx.operator2().DIV_OP();
                 if (token == null) token = ctx.operator2().MUL_OP();
                 throw new TypeMismatchException("Invalid type at line: " + token.getSymbol().getLine());
             }
 
-            switch (right.type){
+            final Value result;
+            switch (right.type) {
                 case VALUE_INT:
-                    if (ctx.operator2().DIV_OP()!=null){
+                case VALUE_INT_REGISTER:
+                    if (ctx.operator2().DIV_OP() != null) {
                         generator.div_i32(right.content, left.content);
                     } else {
                         generator.mul_i32(right.content, left.content);
                     }
-                    Value result = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
-                    valueStack.push(result);
+                    result = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     break;
                 default:
                     //TODO more types
                     throw new UnsupportedOperationException();
             }
+            valueStack.push(result);
         }
     }
 
@@ -344,7 +377,7 @@ public class LLVMActions implements NobleScriptListener {
             }
 
             // Check global scope if varDef still null
-            if (varDef == null ) {
+            if (varDef == null) {
                 if (functionDefs.get(GLOBAL_SCOPE_STACK_ID).containsKey(valueId)) {
                     varDef = functionDefs.get(GLOBAL_SCOPE_STACK_ID).get(valueId);
                     isGlobal = true;
@@ -353,7 +386,15 @@ public class LLVMActions implements NobleScriptListener {
                 }
             }
 
-            Value value = new Value(getValueContent(varDef, isGlobal), VALUE_INT_REGISTER);
+            // TODO more types
+            final Value value;
+            switch (varDef.type) {
+                case INT:
+                    value = new Value(getValueContent(varDef, isGlobal), VALUE_INT_REGISTER);
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
             valueStack.push(value);
         } else if (ctx.function_call_stm() != null) {
             // TODO implement functions calls
@@ -588,7 +629,6 @@ public class LLVMActions implements NobleScriptListener {
             throw new UnsupportedOperationException();
         }
     }
-
 
 
     private void log(String msg) {

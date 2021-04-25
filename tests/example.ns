@@ -1,7 +1,7 @@
 int i = 5;
 i = 10;
 int ala() {
-    i = 17;
-    int a = i;
-    print(a);
+    print(i);
+    i = (2 + 2) * 2;
+    print(i);
 }
