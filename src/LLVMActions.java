@@ -25,14 +25,16 @@ class Value {
 }
 
 class Definition {
-    public String id;
-    public VarType type;
-    public DefinitionType defType;
+    final public String id;
+    final public VarType type;
+    final public DefinitionType defType;
+    final public boolean isGlobal;
 
-    public Definition(String id, VarType type, DefinitionType defType) {
+    public Definition(String id, VarType type, DefinitionType defType, boolean isGlobal) {
         this.id = id;
         this.type = type;
         this.defType = defType;
+        this.isGlobal = isGlobal;
     }
 }
 
@@ -82,32 +84,9 @@ public class LLVMActions implements NobleScriptListener {
     public void exitAssign_statement(NobleScriptParser.Assign_statementContext ctx) {
         log("on exitAssign_statement");
         final String varId = ctx.ID().getText();
-        boolean isGlobal = false;
 
         // Check if variable was defined in function scopes
-        final String scopeId = functionStack.empty() ? "" : functionStack.peek();
-        String[] scopes = scopeId.split("\\.");
-        Definition varDef = null;
-        for (int i = 1; i < scopes.length; i++) {
-            scopes[i] = scopes[i - 1] + "." + scopes[i];
-        }
-        for (int i = scopes.length - 1; i >= 0; i--) {
-            if (functionDefs.get(scopes[i]).containsKey(varId)) {
-                varDef = functionDefs.get(scopes[i]).get(varId);
-                isGlobal = scopes[i].equals(GLOBAL_SCOPE_STACK_ID);
-                break;
-            }
-        }
-
-        // Check global scope if varDef still null
-        if (varDef == null) {
-            if (functionDefs.get(GLOBAL_SCOPE_STACK_ID).containsKey(varId)) {
-                varDef = functionDefs.get(GLOBAL_SCOPE_STACK_ID).get(varId);
-                isGlobal = true;
-            } else {
-                throw new IDNotDefinedException(varId);
-            }
-        }
+        Definition varDef = getVarDefinition(varId);
 
         if (varDef.defType != DefinitionType.VARIABLE) {
             throw new IDFinalException(varId);
@@ -117,10 +96,10 @@ public class LLVMActions implements NobleScriptListener {
         switch (value.type) {
             case VALUE_INT:
             case VALUE_INT_REGISTER:
-                generator.assign_i32(varId, value.content, isGlobal);
+                generator.assign_i32(varId, value.content, varDef.isGlobal);
                 break;
             default:
-                // TODO add more types
+                // TODO add more types in exitAssign_statement
                 throw new UnsupportedOperationException();
         }
     }
@@ -160,7 +139,7 @@ public class LLVMActions implements NobleScriptListener {
         log("on enterFunction_definition");
         final VarType newFunType = VarType.getType(ctx.type(0).getText());
         final String newFunId = ctx.ID(0).getText();
-        final Definition newFunDef = new Definition(newFunId, newFunType, DefinitionType.FUNCTION);
+        final Definition newFunDef = new Definition(newFunId, newFunType, DefinitionType.FUNCTION, functionStack.isEmpty());
 
         final String scopeId = functionStack.empty() ? "" : functionStack.peek();
         final String newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
@@ -185,7 +164,7 @@ public class LLVMActions implements NobleScriptListener {
         functionDefs.put(newScopeId, new HashMap<>());
         functionStack.push(newScopeId);
 
-        // TODO add LLVMGenerator actions
+        // TODO add LLVMGenerator actions for function definition in enterFunction_definition
     }
 
     @Override
@@ -193,7 +172,7 @@ public class LLVMActions implements NobleScriptListener {
         log("on exitFunction_definition");
         functionStack.pop();
 
-        // TODO add LLVMGenerator actions
+        // TODO add LLVMGenerator actions for function definition in exitFunction_definition
     }
 
     @Override
@@ -201,12 +180,10 @@ public class LLVMActions implements NobleScriptListener {
         log("on enterVariable_definition");
         final VarType newVarType = VarType.getType(ctx.type().getText());
         final String newVarId = ctx.ID().getText();
-        final Definition newVarDef = new Definition(newVarId, newVarType, DefinitionType.VARIABLE);
-
-        //TODO more types
+        final Definition newVarDef = new Definition(newVarId, newVarType, DefinitionType.VARIABLE, functionStack.isEmpty());
 
         // Check function scope
-        final String scopeId = functionStack.empty() ? "" : functionStack.peek();
+        final String scopeId = functionStack.empty() ? GLOBAL_SCOPE_STACK_ID : functionStack.peek();
         if (functionDefs.containsKey(scopeId)) {
             if (functionDefs.get(scopeId).containsKey(newVarId)) {
                 throw new IDAlreadyDefinedException(newVarId, scopeId);
@@ -232,7 +209,7 @@ public class LLVMActions implements NobleScriptListener {
                 generator.assign_i32(id, value.content, isGlobal);
                 break;
             default:
-                // TODO add more types
+                // TODO add more types in exitVariable_definition
                 throw new UnsupportedOperationException();
         }
     }
@@ -359,38 +336,14 @@ public class LLVMActions implements NobleScriptListener {
         if (ctx.ID() != null) {
             final String valueId = ctx.ID().getText();
 
-            Definition varDef = null;
-            boolean isGlobal = false;
-
             // Check if variable was defined in any scope
-            final String scopeId = functionStack.empty() ? "" : functionStack.peek();
-            String[] scopes = scopeId.split("\\.");
-            for (int i = 1; i < scopes.length; i++) {
-                scopes[i] = scopes[i - 1] + "." + scopes[i];
-            }
-            for (int i = scopes.length - 1; i >= 0; i--) {
-                if (functionDefs.get(scopes[i]).containsKey(valueId)) {
-                    varDef = functionDefs.get(scopes[i]).get(valueId);
-                    isGlobal = scopes[i].equals(GLOBAL_SCOPE_STACK_ID);
-                    break;
-                }
-            }
-
-            // Check global scope if varDef still null
-            if (varDef == null) {
-                if (functionDefs.get(GLOBAL_SCOPE_STACK_ID).containsKey(valueId)) {
-                    varDef = functionDefs.get(GLOBAL_SCOPE_STACK_ID).get(valueId);
-                    isGlobal = true;
-                } else {
-                    throw new IDNotDefinedException(valueId);
-                }
-            }
+            Definition varDef = getVarDefinition(valueId);
 
             // TODO more types
             final Value value;
             switch (varDef.type) {
                 case INT:
-                    value = new Value(getValueContent(varDef, isGlobal), VALUE_INT_REGISTER);
+                    value = new Value(getValueContent(varDef), VALUE_INT_REGISTER);
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -620,9 +573,9 @@ public class LLVMActions implements NobleScriptListener {
     public void exitEveryRule(ParserRuleContext parserRuleContext) {
     }
 
-    private String getValueContent(Definition definition, boolean isGlobal) {
+    private String getValueContent(Definition definition) {
         if (definition.type == VarType.INT) {
-            generator.load_i32(definition.id, isGlobal);
+            generator.load_i32(definition.id, definition.isGlobal);
             return "%" + (generator.getRegister() - 1);
         } else {
             // TODO function call, load double etc
@@ -630,6 +583,26 @@ public class LLVMActions implements NobleScriptListener {
         }
     }
 
+    private Definition getVarDefinition(String varId){
+        // Check if variable was defined in any scope
+        final String scopeId = functionStack.empty() ? "" : functionStack.peek();
+        String[] scopes = scopeId.split("\\.");
+        for (int i = 1; i < scopes.length; i++) {
+            scopes[i] = scopes[i - 1] + "." + scopes[i];
+        }
+        for (int i = scopes.length - 1; i >= 0; i--) {
+            if (functionDefs.get(scopes[i]).containsKey(varId)) {
+                return functionDefs.get(scopes[i]).get(varId);
+            }
+        }
+
+        // Check global scope if varDef still null
+        if (functionDefs.get(GLOBAL_SCOPE_STACK_ID).containsKey(varId)) {
+            return functionDefs.get(GLOBAL_SCOPE_STACK_ID).get(varId);
+        } else {
+            throw new IDNotDefinedException(varId);
+        }
+    }
 
     private void log(String msg) {
         if (logLevel > 0) System.out.println(msg);

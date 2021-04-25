@@ -8,8 +8,11 @@ public enum ValueType {
             case VALUE_INT:
             case VALUE_INT_REGISTER:
                 return another != VALUE_INT && another != VALUE_INT_REGISTER;
+            case VALUE_DOUBLE:
+            case VALUE_DOUBLE_REGISTER:
+                return another != VALUE_DOUBLE && another != VALUE_DOUBLE_REGISTER;
             default:
-                // TODO implement more types
+                // TODO implement more types in ValueType comparator method
                 throw new UnsupportedOperationException();
         }
     }
