@@ -76,7 +76,7 @@ public class LLVMActions implements NobleScriptListener {
                 // ARRAY ASSIGN STATEMENT
                 if (ctx.INT_LITERAL() != null) {
                     int index = Integer.parseInt(ctx.INT_LITERAL().getText());
-                    int size = ((ArrayDefinition)varDef).size;
+                    int size = ((ArrayDefinition) varDef).size;
                     generator.assign_i32_array(varId, size, index, varDef.isGlobal, value.content);
                 } else {
                     generator.assign_i32(varId, value.content, varDef.isGlobal);
@@ -87,11 +87,19 @@ public class LLVMActions implements NobleScriptListener {
                 if (varDef.type != VarType.DOUBLE) {
                     throw new InvalidAssignmentException(varDef, value);
                 }
-                generator.assign_double(varId, value.content, varDef.isGlobal);
+
+                // ARRAY ASSIGN STATEMENT
+                if (ctx.INT_LITERAL() != null) {
+                    int index = Integer.parseInt(ctx.INT_LITERAL().getText());
+                    int size = ((ArrayDefinition) varDef).size;
+                    generator.assign_double_array(varId, size, index, varDef.isGlobal, value.content);
+                } else {
+                    generator.assign_double(varId, value.content, varDef.isGlobal);
+                }
                 break;
             default:
                 // TODO add more types in exitAssign_statement
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Assign operation for type: " + value.type);
         }
     }
 
@@ -111,7 +119,9 @@ public class LLVMActions implements NobleScriptListener {
     }
 
     @Override
-    public void exitDefinition(NobleScriptParser.DefinitionContext ctx) {}
+    public void exitDefinition(NobleScriptParser.DefinitionContext ctx) {
+        log("on exitDefinition");
+    }
 
     @Override
     public void enterStructure_definition(NobleScriptParser.Structure_definitionContext ctx) {
@@ -194,7 +204,7 @@ public class LLVMActions implements NobleScriptListener {
                 break;
             default:
                 // TODO add more types in exitVariable_definition
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Variable definition for type: " + value.type);
         }
     }
 
@@ -204,7 +214,7 @@ public class LLVMActions implements NobleScriptListener {
         final VarType newArrayType = VarType.getType(ctx.type().getText());
         final String newArrayId = ctx.ID().getText();
         final int newArraySize = Integer.parseInt(ctx.INT_LITERAL().getText());
-        final Definition newArrayDef = new ArrayDefinition(newArrayId, newArrayType, DefinitionType.ARRAY, functionStack.isEmpty(), newArraySize);
+        final ArrayDefinition newArrayDef = new ArrayDefinition(newArrayId, newArrayType, functionStack.isEmpty(), newArraySize);
 
         // Check function scope
         final String scopeId = functionStack.empty() ? GLOBAL_SCOPE_STACK_ID : functionStack.peek();
@@ -212,13 +222,21 @@ public class LLVMActions implements NobleScriptListener {
 
         functionDefs.get(scopeId).put(newArrayId, newArrayDef);
 
-        generator.declare_i32_array(newArrayId, newArraySize, functionStack.empty());
+        switch (newArrayType) {
+            case INT:
+                generator.declare_i32_array(newArrayId, newArraySize, functionStack.empty());
+                break;
+            case DOUBLE:
+                generator.declare_double_array(newArrayId, newArraySize, functionStack.empty());
+                break;
+            default:
+                throw new UnsupportedOperationException("Array definition for type: " + newArrayType.type);
+        }
     }
 
     @Override
     public void exitArray_definition(NobleScriptParser.Array_definitionContext ctx) {
         log("on exitArray_definition");
-
     }
 
     @Override
@@ -285,7 +303,7 @@ public class LLVMActions implements NobleScriptListener {
                     break;
                 default:
                     //TODO more types
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("Expression1 for type: " + right.type);
             }
             valueStack.push(result);
         }
@@ -334,7 +352,7 @@ public class LLVMActions implements NobleScriptListener {
                     break;
                 default:
                     //TODO more types
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("Expression2 for type: " + right.type);
             }
             valueStack.push(result);
         }
@@ -368,22 +386,45 @@ public class LLVMActions implements NobleScriptListener {
             final Value value;
             switch (varDef.type) {
                 case INT:
-                    value = new Value(getValueContent(varDef), VALUE_INT_REGISTER);
+                    generator.load_i32(varDef.id, varDef.isGlobal);
+                    value = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     break;
                 case DOUBLE:
-                    value = new Value(getValueContent(varDef), VALUE_DOUBLE_REGISTER);
+                    generator.load_double(varDef.id, varDef.isGlobal);
+                    value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
                     break;
                 default:
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("Value for type: " + varDef.type);
             }
             valueStack.push(value);
+
         } else if (ctx.function_call_stm() != null) {
             // TODO implement functions calls
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Function calls");
+
         } else if (ctx.array_index() != null) {
             final String arrayId = ctx.array_index().ID().getText();
-            // TODO implement array index call
-            throw new UnsupportedOperationException();
+            final ArrayDefinition arrayDef = (ArrayDefinition) getVarDefinition(arrayId);
+            final int indexValue = Integer.parseInt(ctx.array_index().INT_LITERAL().getText());
+
+            if (indexValue >= arrayDef.size) {
+                throw new ArrayIndexOutOfBoundException(arrayDef, indexValue);
+            }
+
+            final Value value;
+            switch (arrayDef.type) {
+                case INT:
+                    generator.load_i32_array_index(arrayDef.id, arrayDef.size, indexValue, arrayDef.isGlobal);
+                    value = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
+                    break;
+                case DOUBLE:
+                    generator.load_double_array_index(arrayDef.id, arrayDef.size, indexValue, arrayDef.isGlobal);
+                    value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Array index for type: " + arrayDef.type);
+            }
+            valueStack.push(value);
         }
     }
 
@@ -422,7 +463,7 @@ public class LLVMActions implements NobleScriptListener {
         } else if (value.type == VALUE_DOUBLE || value.type == VALUE_DOUBLE_REGISTER) {
             generator.printf_double(value.content);
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Print statement for type: " + value.type);
         }
     }
 
@@ -585,20 +626,6 @@ public class LLVMActions implements NobleScriptListener {
 
     @Override
     public void exitEveryRule(ParserRuleContext parserRuleContext) {
-    }
-
-    private String getValueContent(Definition definition) {
-        switch (definition.type) {
-            case INT:
-                generator.load_i32(definition.id, definition.isGlobal);
-                return "%" + (generator.getRegister() - 1);
-            case DOUBLE:
-                generator.load_double(definition.id, definition.isGlobal);
-                return "%" + (generator.getRegister() - 1);
-            default:
-                // TODO function call, load double etc
-                throw new UnsupportedOperationException();
-        }
     }
 
     private Definition getVarDefinition(String varId) {

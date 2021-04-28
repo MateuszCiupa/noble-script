@@ -3,16 +3,19 @@ source_filename = "test.c"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
 
-@mojGlobalInt = dso_local global i32 666, align 4
-@mojGlobalArray = common dso_local global [777 x i32] zeroinitializer, align 16
-
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @main() #0 {
-  %1 = alloca i32, align 4
-  %2 = alloca [333 x i32], align 16
-  store i32 2, i32* %1, align 4
-  %3 = getelementptr inbounds [333 x i32], [333 x i32]* %2, i64 0, i64 2
-  store i32 69, i32* %3, align 8
+  %1 = alloca [5 x i32], align 16
+  %2 = alloca i32, align 4
+  %3 = alloca [2 x double], align 16
+  %4 = getelementptr inbounds [5 x i32], [5 x i32]* %1, i64 0, i64 3
+  store i32 5, i32* %4, align 4
+  %5 = getelementptr inbounds [5 x i32], [5 x i32]* %1, i64 0, i64 3
+  %6 = load i32, i32* %5, align 4
+  %7 = add nsw i32 2, %6
+  store i32 %7, i32* %2, align 4
+  %8 = getelementptr inbounds [2 x double], [2 x double]* %3, i64 0, i64 1
+  store double 2.000000e+00, double* %8, align 8
   ret i32 0
 }
 

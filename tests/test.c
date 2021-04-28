@@ -1,12 +1,8 @@
-int mojGlobalArray[777];
-int mojGlobalInt = 666;
 
 int main (){
-    int a = 2;
-    int mojLocalArray[333];
-//    int mojLocalInt = 222;
-
-    mojLocalArray[2] = 69;
-//    int myNextLocalInt = mojLocalArray[2];
-
+    int dupa[5];
+    dupa[3] = 5;
+    int b = 2 + dupa[3];
+    double zzz[2];
+    zzz[1]=2.0;
 }

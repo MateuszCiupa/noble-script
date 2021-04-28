@@ -1,6 +1,6 @@
-int ala[10];
 
 int fun() {
-    int dupa[5];
-    dupa[3] = 5;
+    double zzz[2];
+    zzz[1]=2.0;
+    print(zzz[1]);
 }

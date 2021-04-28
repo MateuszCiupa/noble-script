@@ -66,30 +66,44 @@ public class LLVMGenerator {
     /**
      * Array
      */
-    public void declare_i32_array(String id, int size, boolean isGlobal) {
+    private void declare_array(String id, int size, boolean isGlobal, String type) {
         if (isGlobal) {
             header.append("@")
                     .append(id)
                     .append(" = common dso_local global [")
                     .append(size)
-                    .append(" x i32] zeroinitializer, align 16\n");
+                    .append(" x ")
+                    .append(type)
+                    .append("] zeroinitializer, align 16\n");
         } else {
             buffer.append("%")
                     .append(id)
                     .append(" = alloca [")
                     .append(size)
-                    .append(" x i32], align 16\n");
+                    .append(" x ")
+                    .append(type)
+                    .append("], align 16\n");
         }
     }
 
-    public void load_i32_array_index(String id, int size, int index, boolean isGlobal) {
+    public void declare_i32_array(String id, int size, boolean isGlobal) {
+        declare_array(id, size, isGlobal, "i32");
+    }
+
+    public void declare_double_array(String id, int size, boolean isGlobal) {
+        declare_array(id, size, isGlobal, "double");
+    }
+
+    private void load_array_index(String id, int size, int index, boolean isGlobal, String type) {
         buffer.append("%")
                 .append(register++)
                 .append(" = getelementptr inbounds [")
-                .append(size)
-                .append(" x i32],[")
-                .append(size)
-                .append(" x i32]* ")
+                .append(size).append(" x ")
+                .append(type)
+                .append("],[")
+                .append(size).append(" x ")
+                .append(type)
+                .append(" ]* ")
                 .append(isGlobal ? "@" : "%")
                 .append(id)
                 .append(", i64 0, i64 ")
@@ -97,28 +111,54 @@ public class LLVMGenerator {
                 .append("\n");
         buffer.append("%")
                 .append(register++)
-                .append(" = load i32, i32* %")
+                .append(" = load ")
+                .append(type)
+                .append(", ")
+                .append(type)
+                .append("* %")
                 .append(register - 2).append(", align 4\n");
     }
 
-    public void assign_i32_array(String id, int size, int index, boolean isGlobal, String value) {
+    public void load_i32_array_index(String id, int size, int index, boolean isGlobal) {
+        load_array_index(id, size, index, isGlobal, "i32");
+    }
+
+    public void load_double_array_index(String id, int size, int index, boolean isGlobal) {
+        load_array_index(id, size, index, isGlobal, "double");
+    }
+
+    public void assign_array(String id, int size, int index, boolean isGlobal, String value, String type) {
         buffer.append("%")
                 .append(register++)
                 .append(" = getelementptr inbounds [")
-                .append(size)
-                .append(" x i32],[")
-                .append(size)
-                .append(" x i32]* ")
+                .append(size).append(" x ")
+                .append(type)
+                .append("],[")
+                .append(size).append(" x ")
+                .append(type)
+                .append("]* ")
                 .append(isGlobal ? "@" : "%")
                 .append(id)
                 .append(", i64 0, i64 ")
                 .append(index)
                 .append("\n");
-        buffer.append("store i32 ")
+        buffer.append("store ")
+                .append(type)
+                .append(" ")
                 .append(value)
-                .append(", i32* %")
+                .append(", ")
+                .append(type)
+                .append("* %")
                 .append(register - 1)
                 .append("\n");
+    }
+
+    public void assign_i32_array(String id, int size, int index, boolean isGlobal, String value) {
+        assign_array(id, size, index, isGlobal, value, "i32");
+    }
+
+    public void assign_double_array(String id, int size, int index, boolean isGlobal, String value) {
+        assign_array(id, size, index, isGlobal, value, "double");
     }
 
     /**
@@ -163,7 +203,6 @@ public class LLVMGenerator {
                 .append(val2)
                 .append("\n");
     }
-
 
     public void sub_i32(String val1, String val2) {
         buffer.append("%")
