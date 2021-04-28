@@ -7,11 +7,13 @@ declare i32 @scanf(i8*, ...)
 @strsd = constant [4 x i8] c"%lf\00"
 
 define i32 @main() nounwind {
-  %zzz = alloca [2 x double], align 16
-  %1 = getelementptr inbounds [2 x double],[2 x double]* %zzz, i64 0, i64 1
-  store double 2.0, double* %1
-  %2 = getelementptr inbounds [2 x double],[2 x double ]* %zzz, i64 0, i64 1
-  %3 = load double, double* %2, align 4
-  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %3)
+  %a = alloca i32
+  store i32 2, i32* %a
+  %1 = load i32, i32* %a
+  %2 = sitofp i32 %1 to double%3 = fadd double 2.0, %2
+  %b = alloca double
+  store double %3, double* %b
+  %4 = load double, double* %b
+  %5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %4)
   ret i32 0
 }

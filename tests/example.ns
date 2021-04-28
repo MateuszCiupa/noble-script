@@ -1,6 +1,6 @@
 
 int fun() {
-    double zzz[2];
-    zzz[1]=2.0;
-    print(zzz[1]);
+    int a = 2;
+    double b = 2.0 + a;
+    print(b);
 }

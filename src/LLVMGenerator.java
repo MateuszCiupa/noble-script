@@ -233,6 +233,14 @@ public class LLVMGenerator {
                 .append("\n");
     }
 
+    public void i32_to_double(String content){
+        buffer.append("%")
+                .append(register++)
+                .append(" = sitofp i32 ")
+                .append(content)
+                .append(" to double");
+    }
+
     /**
      * DOUBLE
      */

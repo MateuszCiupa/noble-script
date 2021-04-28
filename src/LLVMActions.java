@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import types.DefinitionType;
+import types.ValueType;
 import types.VarType;
 
 import java.util.*;
@@ -273,7 +274,24 @@ public class LLVMActions implements NobleScriptListener {
             Value right = valueStack.pop();
             Value left = valueStack.pop();
 
-            // TODO Type casting
+            // Type casting
+            final List<ValueType> intTypes = new ArrayList<ValueType>() {{
+                add(VALUE_INT);
+                add(VALUE_INT_REGISTER);
+            }};
+            final List<ValueType> doubleTypes = new ArrayList<ValueType>() {{
+                add(VALUE_INT);
+                add(VALUE_INT_REGISTER);
+            }};
+
+            if (intTypes.contains(left.type) && !doubleTypes.contains(right.type)) {
+                generator.i32_to_double(left.content);
+                left = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE);
+            } else if (intTypes.contains(right.type) && !doubleTypes.contains(left.type)) {
+                generator.i32_to_double(right.content);
+                right = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE);
+            }
+
             // Check variable types
             if (right.type.notEquals(left.type)) {
                 TerminalNode token = ctx.operator1().MINUS_OP();
@@ -322,7 +340,25 @@ public class LLVMActions implements NobleScriptListener {
             Value right = valueStack.pop();
             Value left = valueStack.pop();
 
-            // TODO Type casting
+            // Type casting
+            final List<ValueType> intTypes = new ArrayList<ValueType>() {{
+                add(VALUE_INT);
+                add(VALUE_INT_REGISTER);
+            }};
+            final List<ValueType> doubleTypes = new ArrayList<ValueType>() {{
+                add(VALUE_INT);
+                add(VALUE_INT_REGISTER);
+            }};
+
+            if (intTypes.contains(left.type) && !doubleTypes.contains(right.type)) {
+                generator.i32_to_double(left.content);
+                left = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE);
+            } else if (intTypes.contains(right.type) && !doubleTypes.contains(left.type)) {
+                generator.i32_to_double(right.content);
+                right = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE);
+            }
+
+
             // Check variable types
             if (right.type.notEquals(left.type)) {
                 TerminalNode token = ctx.operator2().DIV_OP();
