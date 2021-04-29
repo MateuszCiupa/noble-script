@@ -50,17 +50,42 @@ public class LLVMGenerator {
                 .append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double ")
                 .append(content)
                 .append(")\n");
-//        buffer.append("%")
-//                .append(register++)
-//                .append(" = load double, double* ")
-//                .append(isGlobal ? "@" : "%")
-//                .append(id)
-//                .append("\n")
-//                .append("%")
-//                .append(register++)
-//                .append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %")
-//                .append(register - 1)
-//                .append(")\n");
+    }
+
+    /**
+     * Scanners
+     */
+
+    public void scanf_i32() {
+        buffer.append("%")
+                .append(register++)
+                .append(" = alloca i32\n");
+        buffer.append("%")
+                .append(register++)
+                .append(" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @strsi, i32 0, i32 0), i32* %")
+                .append(register - 2)
+                .append(")\n");
+        buffer.append("%")
+                .append(register++)
+                .append(" = load i32, i32* %")
+                .append(register - 3)
+                .append("\n");
+    }
+
+    public void scanf_fouble() {
+        buffer.append("%")
+                .append(register++)
+                .append(" = alloca double");
+        buffer.append("%")
+                .append(register++)
+                .append(" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strsd, i32 0, i32 0), double* %")
+                .append(register - 2)
+                .append(")\n");
+        buffer.append("%")
+                .append(register++)
+                .append(" = load double, double* %")
+                .append(register - 3)
+                .append("\n");
     }
 
     /**
@@ -233,7 +258,7 @@ public class LLVMGenerator {
                 .append("\n");
     }
 
-    public void i32_to_double(String content){
+    public void i32_to_double(String content) {
         buffer.append("%")
                 .append(register++)
                 .append(" = sitofp i32 ")

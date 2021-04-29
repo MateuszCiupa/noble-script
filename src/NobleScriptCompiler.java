@@ -1,3 +1,4 @@
+import exceptions.NobleScriptException;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -30,7 +31,8 @@ public class NobleScriptCompiler {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NobleScriptException e) {
+            System.err.println("Script is invalid: " + e.getMessage());
         }
-
     }
 }

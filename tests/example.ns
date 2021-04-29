@@ -1,6 +1,8 @@
 
+
 int fun() {
-    int a = 2;
-    double b = 2.0 + a;
-    print(b);
+    double a = 69.0;
+    print(a);
+    a = readDouble() + readInt();
+    print(a);
 }

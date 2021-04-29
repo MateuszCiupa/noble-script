@@ -7,13 +7,18 @@ declare i32 @scanf(i8*, ...)
 @strsd = constant [4 x i8] c"%lf\00"
 
 define i32 @main() nounwind {
-  %a = alloca i32
-  store i32 2, i32* %a
-  %1 = load i32, i32* %a
-  %2 = sitofp i32 %1 to double%3 = fadd double 2.0, %2
-  %b = alloca double
-  store double %3, double* %b
-  %4 = load double, double* %b
-  %5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %4)
+  %a = alloca double
+  store double 69.0, double* %a
+  %1 = load double, double* %a
+  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %1)
+  %3 = alloca double%4 = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strsd, i32 0, i32 0), double* %3)
+  %5 = load double, double* %3
+  %6 = alloca i32
+  %7 = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @strsi, i32 0, i32 0), i32* %6)
+  %8 = load i32, i32* %6
+  %9 = sitofp i32 %8 to double%10 = fadd double %5, %9
+  store double %10, double* %a
+  %11 = load double, double* %a
+  %12 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %11)
   ret i32 0
 }

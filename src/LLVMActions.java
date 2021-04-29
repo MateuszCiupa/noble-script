@@ -434,10 +434,6 @@ public class LLVMActions implements NobleScriptListener {
             }
             valueStack.push(value);
 
-        } else if (ctx.function_call_stm() != null) {
-            // TODO implement functions calls
-            throw new UnsupportedOperationException("Function calls");
-
         } else if (ctx.array_index() != null) {
             final String arrayId = ctx.array_index().ID().getText();
             final ArrayDefinition arrayDef = (ArrayDefinition) getVarDefinition(arrayId);
@@ -646,6 +642,24 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitIf_statement(NobleScriptParser.If_statementContext ctx) {
         log("on exitIf_statement");
+    }
+
+    @Override
+    public void enterRead_op(NobleScriptParser.Read_opContext ctx) {
+        log("on enterRead_op");
+    }
+
+    @Override
+    public void exitRead_op(NobleScriptParser.Read_opContext ctx) {
+        log("on exitRead_op");
+
+        if (ctx.READ_INT() != null) {
+            generator.scanf_i32();
+            valueStack.push(new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER));
+        } else if (ctx.READ_DOUBLE() != null) {
+            generator.scanf_fouble();
+            valueStack.push(new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER));
+        }
     }
 
     @Override

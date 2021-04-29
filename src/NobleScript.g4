@@ -40,7 +40,7 @@ value: literal
 
 array_index: ID BRACKET_OPEN INT_LITERAL BRACKET_CLOSE;
 
-function_call_stm: ID '(' (expression)? (','expression)* ')' | READ | print_stm;
+function_call_stm: ID '(' (expression)? (','expression)* ')' | read_op | print_stm;
 print_stm: 'print(' expression ')';
 
 literal: primitive_literal;
@@ -58,7 +58,10 @@ compound_statement: if_statement | loop_statement;
 loop_statement: WHILE PAR_OPEN expression PAR_CLOSE BRACES_OPEN statement* BRACES_CLOSE;
 if_statement: IF PAR_OPEN expression PAR_CLOSE BRACES_OPEN statement* BRACES_CLOSE (ELIF PAR_OPEN expression PAR_CLOSE BRACES_OPEN statement* BRACES_CLOSE)* (ELSE BRACES_OPEN statement* BRACES_CLOSE)?;
 
-READ: 'read()';
+read_op: READ_INT | READ_DOUBLE;
+
+READ_DOUBLE: 'readDouble()';
+READ_INT: 'readInt()';
 RETURN: 'return';
 
 WHILE: 'while';
