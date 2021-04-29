@@ -1,10 +1,12 @@
 import exceptions.*;
+import meta.ArrayDefinition;
 import meta.Definition;
 import meta.Value;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import types.DefinitionType;
+import types.ValueType;
 import types.VarType;
 
 import java.util.*;
@@ -62,7 +64,7 @@ public class LLVMActions implements NobleScriptListener {
         // Check if variable was defined in function scopes
         Definition varDef = getVarDefinition(varId);
 
-        if (varDef.defType != DefinitionType.VARIABLE) {
+        if (varDef.defType != DefinitionType.VARIABLE && varDef.defType != DefinitionType.ARRAY) {
             throw new IDFinalException(varId);
         }
 
@@ -72,18 +74,33 @@ public class LLVMActions implements NobleScriptListener {
                 if (varDef.type != VarType.INT) {
                     throw new InvalidAssignmentException(varDef, value);
                 }
-                generator.assign_i32(varId, value.content, varDef.isGlobal);
+                // ARRAY ASSIGN STATEMENT
+                if (ctx.INT_LITERAL() != null) {
+                    int index = Integer.parseInt(ctx.INT_LITERAL().getText());
+                    int size = ((ArrayDefinition) varDef).size;
+                    generator.assign_i32_array(varId, size, index, varDef.isGlobal, value.content);
+                } else {
+                    generator.assign_i32(varId, value.content, varDef.isGlobal);
+                }
                 break;
             case VALUE_DOUBLE:
             case VALUE_DOUBLE_REGISTER:
                 if (varDef.type != VarType.DOUBLE) {
                     throw new InvalidAssignmentException(varDef, value);
                 }
-                generator.assign_double(varId, value.content, varDef.isGlobal);
+
+                // ARRAY ASSIGN STATEMENT
+                if (ctx.INT_LITERAL() != null) {
+                    int index = Integer.parseInt(ctx.INT_LITERAL().getText());
+                    int size = ((ArrayDefinition) varDef).size;
+                    generator.assign_double_array(varId, size, index, varDef.isGlobal, value.content);
+                } else {
+                    generator.assign_double(varId, value.content, varDef.isGlobal);
+                }
                 break;
             default:
                 // TODO add more types in exitAssign_statement
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Assign operation for type: " + value.type);
         }
     }
 
@@ -132,18 +149,9 @@ public class LLVMActions implements NobleScriptListener {
             throw new IDAlreadyDefinedException(newFunId, scopeId);
         }
 
-        // Add function definition to its scope
-        if (functionDefs.containsKey(scopeId)) {
-            // Check if the ID already exists in the scope
-            if (functionDefs.get(scopeId).containsKey(newFunId)) {
-                throw new IDAlreadyDefinedException(newFunId, scopeId);
-            }
+        verifyIdIsAvailableInCurrentScope(newFunId);
 
-            functionDefs.get(scopeId).put(newFunId, newFunDef);
-        } else {
-            throw new IllegalStateException("Unable to check if ID {" + newFunId + "} was defined in scope P" + scopeId + "}");
-        }
-
+        functionDefs.get(scopeId).put(newFunId, newFunDef);
         functionDefs.put(newScopeId, new HashMap<>());
         functionStack.push(newScopeId);
 
@@ -167,13 +175,7 @@ public class LLVMActions implements NobleScriptListener {
 
         // Check function scope
         final String scopeId = functionStack.empty() ? GLOBAL_SCOPE_STACK_ID : functionStack.peek();
-        if (functionDefs.containsKey(scopeId)) {
-            if (functionDefs.get(scopeId).containsKey(newVarId)) {
-                throw new IDAlreadyDefinedException(newVarId, scopeId);
-            }
-        } else {
-            throw new IllegalStateException("Cannot define variable: " + newVarId + " for function: " + scopeId);
-        }
+        verifyIdIsAvailableInCurrentScope(newVarId);
 
         functionDefs.get(scopeId).put(newVarId, newVarDef);
     }
@@ -203,8 +205,39 @@ public class LLVMActions implements NobleScriptListener {
                 break;
             default:
                 // TODO add more types in exitVariable_definition
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Variable definition for type: " + value.type);
         }
+    }
+
+    @Override
+    public void enterArray_definition(NobleScriptParser.Array_definitionContext ctx) {
+        log("on enterArray_definition");
+        final VarType newArrayType = VarType.getType(ctx.type().getText());
+        final String newArrayId = ctx.ID().getText();
+        final int newArraySize = Integer.parseInt(ctx.INT_LITERAL().getText());
+        final ArrayDefinition newArrayDef = new ArrayDefinition(newArrayId, newArrayType, functionStack.isEmpty(), newArraySize);
+
+        // Check function scope
+        final String scopeId = functionStack.empty() ? GLOBAL_SCOPE_STACK_ID : functionStack.peek();
+        verifyIdIsAvailableInCurrentScope(newArrayId);
+
+        functionDefs.get(scopeId).put(newArrayId, newArrayDef);
+
+        switch (newArrayType) {
+            case INT:
+                generator.declare_i32_array(newArrayId, newArraySize, functionStack.empty());
+                break;
+            case DOUBLE:
+                generator.declare_double_array(newArrayId, newArraySize, functionStack.empty());
+                break;
+            default:
+                throw new UnsupportedOperationException("Array definition for type: " + newArrayType.type);
+        }
+    }
+
+    @Override
+    public void exitArray_definition(NobleScriptParser.Array_definitionContext ctx) {
+        log("on exitArray_definition");
     }
 
     @Override
@@ -241,7 +274,24 @@ public class LLVMActions implements NobleScriptListener {
             Value right = valueStack.pop();
             Value left = valueStack.pop();
 
-            // TODO Type casting
+            // Type casting
+            final List<ValueType> intTypes = new ArrayList<ValueType>() {{
+                add(VALUE_INT);
+                add(VALUE_INT_REGISTER);
+            }};
+            final List<ValueType> doubleTypes = new ArrayList<ValueType>() {{
+                add(VALUE_INT);
+                add(VALUE_INT_REGISTER);
+            }};
+
+            if (intTypes.contains(left.type) && !doubleTypes.contains(right.type)) {
+                generator.i32_to_double(left.content);
+                left = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE);
+            } else if (intTypes.contains(right.type) && !doubleTypes.contains(left.type)) {
+                generator.i32_to_double(right.content);
+                right = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE);
+            }
+
             // Check variable types
             if (right.type.notEquals(left.type)) {
                 TerminalNode token = ctx.operator1().MINUS_OP();
@@ -271,7 +321,7 @@ public class LLVMActions implements NobleScriptListener {
                     break;
                 default:
                     //TODO more types
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("Expression1 for type: " + right.type);
             }
             valueStack.push(result);
         }
@@ -290,7 +340,25 @@ public class LLVMActions implements NobleScriptListener {
             Value right = valueStack.pop();
             Value left = valueStack.pop();
 
-            // TODO Type casting
+            // Type casting
+            final List<ValueType> intTypes = new ArrayList<ValueType>() {{
+                add(VALUE_INT);
+                add(VALUE_INT_REGISTER);
+            }};
+            final List<ValueType> doubleTypes = new ArrayList<ValueType>() {{
+                add(VALUE_INT);
+                add(VALUE_INT_REGISTER);
+            }};
+
+            if (intTypes.contains(left.type) && !doubleTypes.contains(right.type)) {
+                generator.i32_to_double(left.content);
+                left = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE);
+            } else if (intTypes.contains(right.type) && !doubleTypes.contains(left.type)) {
+                generator.i32_to_double(right.content);
+                right = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE);
+            }
+
+
             // Check variable types
             if (right.type.notEquals(left.type)) {
                 TerminalNode token = ctx.operator2().DIV_OP();
@@ -320,7 +388,7 @@ public class LLVMActions implements NobleScriptListener {
                     break;
                 default:
                     //TODO more types
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("Expression2 for type: " + right.type);
             }
             valueStack.push(result);
         }
@@ -354,19 +422,56 @@ public class LLVMActions implements NobleScriptListener {
             final Value value;
             switch (varDef.type) {
                 case INT:
-                    value = new Value(getValueContent(varDef), VALUE_INT_REGISTER);
+                    generator.load_i32(varDef.id, varDef.isGlobal);
+                    value = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     break;
                 case DOUBLE:
-                    value = new Value(getValueContent(varDef), VALUE_DOUBLE_REGISTER);
+                    generator.load_double(varDef.id, varDef.isGlobal);
+                    value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
                     break;
                 default:
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("Value for type: " + varDef.type);
             }
             valueStack.push(value);
+
         } else if (ctx.function_call_stm() != null) {
             // TODO implement functions calls
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Function calls");
+
+        } else if (ctx.array_index() != null) {
+            final String arrayId = ctx.array_index().ID().getText();
+            final ArrayDefinition arrayDef = (ArrayDefinition) getVarDefinition(arrayId);
+            final int indexValue = Integer.parseInt(ctx.array_index().INT_LITERAL().getText());
+
+            if (indexValue >= arrayDef.size) {
+                throw new ArrayIndexOutOfBoundException(arrayDef, indexValue);
+            }
+
+            final Value value;
+            switch (arrayDef.type) {
+                case INT:
+                    generator.load_i32_array_index(arrayDef.id, arrayDef.size, indexValue, arrayDef.isGlobal);
+                    value = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
+                    break;
+                case DOUBLE:
+                    generator.load_double_array_index(arrayDef.id, arrayDef.size, indexValue, arrayDef.isGlobal);
+                    value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Array index for type: " + arrayDef.type);
+            }
+            valueStack.push(value);
         }
+    }
+
+    @Override
+    public void enterArray_index(NobleScriptParser.Array_indexContext ctx) {
+        log("on enterArray_index");
+    }
+
+    @Override
+    public void exitArray_index(NobleScriptParser.Array_indexContext ctx) {
+        log("on exitArray_index");
     }
 
     @Override
@@ -394,7 +499,7 @@ public class LLVMActions implements NobleScriptListener {
         } else if (value.type == VALUE_DOUBLE || value.type == VALUE_DOUBLE_REGISTER) {
             generator.printf_double(value.content);
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Print statement for type: " + value.type);
         }
     }
 
@@ -464,16 +569,6 @@ public class LLVMActions implements NobleScriptListener {
     }
 
     @Override
-    public void enterArray_literal(NobleScriptParser.Array_literalContext ctx) {
-        log("on enterArray_literal");
-    }
-
-    @Override
-    public void exitArray_literal(NobleScriptParser.Array_literalContext ctx) {
-        log("on exitArray_literal");
-    }
-
-    @Override
     public void enterType(NobleScriptParser.TypeContext ctx) {
         log("on enterType");
     }
@@ -484,16 +579,6 @@ public class LLVMActions implements NobleScriptListener {
     }
 
     @Override
-    public void enterArray_type(NobleScriptParser.Array_typeContext ctx) {
-        log("on enterArray_type");
-    }
-
-    @Override
-    public void exitArray_type(NobleScriptParser.Array_typeContext ctx) {
-        log("on exitArray_type");
-    }
-
-    @Override
     public void enterPrimitive_type(NobleScriptParser.Primitive_typeContext ctx) {
         log("on enterPrimitive_type");
     }
@@ -501,16 +586,6 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitPrimitive_type(NobleScriptParser.Primitive_typeContext ctx) {
         log("on exitPrimitive_type");
-    }
-
-    @Override
-    public void enterOperator3(NobleScriptParser.Operator3Context ctx) {
-        log("on enterOperator3");
-    }
-
-    @Override
-    public void exitOperator3(NobleScriptParser.Operator3Context ctx) {
-        log("on exitOperator3");
     }
 
     @Override
@@ -589,20 +664,6 @@ public class LLVMActions implements NobleScriptListener {
     public void exitEveryRule(ParserRuleContext parserRuleContext) {
     }
 
-    private String getValueContent(Definition definition) {
-        switch (definition.type) {
-            case INT:
-                generator.load_i32(definition.id, definition.isGlobal);
-                return "%" + (generator.getRegister() - 1);
-            case DOUBLE:
-                generator.load_double(definition.id, definition.isGlobal);
-                return "%" + (generator.getRegister() - 1);
-            default:
-                // TODO function call, load double etc
-                throw new UnsupportedOperationException();
-        }
-    }
-
     private Definition getVarDefinition(String varId) {
         // Check if variable was defined in any scope
         final String scopeId = functionStack.empty() ? "" : functionStack.peek();
@@ -621,6 +682,18 @@ public class LLVMActions implements NobleScriptListener {
             return functionDefs.get(GLOBAL_SCOPE_STACK_ID).get(varId);
         } else {
             throw new IDNotDefinedException(varId);
+        }
+    }
+
+    private void verifyIdIsAvailableInCurrentScope(String id) {
+        // Check function scope
+        final String scopeId = functionStack.empty() ? GLOBAL_SCOPE_STACK_ID : functionStack.peek();
+        if (functionDefs.containsKey(scopeId)) {
+            if (functionDefs.get(scopeId).containsKey(id)) {
+                throw new IDAlreadyDefinedException(id, scopeId);
+            }
+        } else {
+            throw new IllegalStateException("ID {" + id + "} is not accessible in current scope {" + scopeId + "}");
         }
     }
 

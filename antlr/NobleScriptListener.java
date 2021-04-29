@@ -87,6 +87,16 @@ public interface NobleScriptListener extends ParseTreeListener {
 	 */
 	void exitVariable_definition(NobleScriptParser.Variable_definitionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#array_definition}.
+	 * @param ctx the parse tree
+	 */
+	void enterArray_definition(NobleScriptParser.Array_definitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#array_definition}.
+	 * @param ctx the parse tree
+	 */
+	void exitArray_definition(NobleScriptParser.Array_definitionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NobleScriptParser#expression}.
 	 * @param ctx the parse tree
 	 */
@@ -146,6 +156,16 @@ public interface NobleScriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitValue(NobleScriptParser.ValueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#array_index}.
+	 * @param ctx the parse tree
+	 */
+	void enterArray_index(NobleScriptParser.Array_indexContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#array_index}.
+	 * @param ctx the parse tree
+	 */
+	void exitArray_index(NobleScriptParser.Array_indexContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NobleScriptParser#function_call_stm}.
 	 * @param ctx the parse tree
@@ -237,16 +257,6 @@ public interface NobleScriptListener extends ParseTreeListener {
 	 */
 	void exitNull(NobleScriptParser.NullContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NobleScriptParser#array_literal}.
-	 * @param ctx the parse tree
-	 */
-	void enterArray_literal(NobleScriptParser.Array_literalContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NobleScriptParser#array_literal}.
-	 * @param ctx the parse tree
-	 */
-	void exitArray_literal(NobleScriptParser.Array_literalContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link NobleScriptParser#type}.
 	 * @param ctx the parse tree
 	 */
@@ -257,16 +267,6 @@ public interface NobleScriptListener extends ParseTreeListener {
 	 */
 	void exitType(NobleScriptParser.TypeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NobleScriptParser#array_type}.
-	 * @param ctx the parse tree
-	 */
-	void enterArray_type(NobleScriptParser.Array_typeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NobleScriptParser#array_type}.
-	 * @param ctx the parse tree
-	 */
-	void exitArray_type(NobleScriptParser.Array_typeContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link NobleScriptParser#primitive_type}.
 	 * @param ctx the parse tree
 	 */
@@ -276,16 +276,6 @@ public interface NobleScriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitPrimitive_type(NobleScriptParser.Primitive_typeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NobleScriptParser#operator3}.
-	 * @param ctx the parse tree
-	 */
-	void enterOperator3(NobleScriptParser.Operator3Context ctx);
-	/**
-	 * Exit a parse tree produced by {@link NobleScriptParser#operator3}.
-	 * @param ctx the parse tree
-	 */
-	void exitOperator3(NobleScriptParser.Operator3Context ctx);
 	/**
 	 * Enter a parse tree produced by {@link NobleScriptParser#operator2}.
 	 * @param ctx the parse tree

@@ -111,6 +111,18 @@ public class NobleScriptBaseListener implements NobleScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterArray_definition(NobleScriptParser.Array_definitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArray_definition(NobleScriptParser.Array_definitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterExpression(NobleScriptParser.ExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -178,6 +190,18 @@ public class NobleScriptBaseListener implements NobleScriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitValue(NobleScriptParser.ValueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArray_index(NobleScriptParser.Array_indexContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArray_index(NobleScriptParser.Array_indexContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -279,18 +303,6 @@ public class NobleScriptBaseListener implements NobleScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArray_literal(NobleScriptParser.Array_literalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArray_literal(NobleScriptParser.Array_literalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterType(NobleScriptParser.TypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -303,18 +315,6 @@ public class NobleScriptBaseListener implements NobleScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArray_type(NobleScriptParser.Array_typeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArray_type(NobleScriptParser.Array_typeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterPrimitive_type(NobleScriptParser.Primitive_typeContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -322,18 +322,6 @@ public class NobleScriptBaseListener implements NobleScriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitPrimitive_type(NobleScriptParser.Primitive_typeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterOperator3(NobleScriptParser.Operator3Context ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitOperator3(NobleScriptParser.Operator3Context ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
