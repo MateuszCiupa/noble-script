@@ -59,10 +59,16 @@ public class LLVMActions implements NobleScriptListener {
     public void exitAssign_statement(NobleScriptParser.Assign_statementContext ctx) {
         log("on exitAssign_statement");
         final String varId = ctx.ID().getText();
-        final Value value = valueStack.pop();
+        Value value = valueStack.pop();
 
         // Check if variable was defined in function scopes
         Definition varDef = getVarDefinition(varId);
+
+        // Type casting
+        if (varDef.type == VarType.DOUBLE && (value.type == VALUE_INT || value.type == VALUE_INT_REGISTER)) {
+            generator.i32_to_double(value.content);
+            value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE);
+        }
 
         if (varDef.defType != DefinitionType.VARIABLE && varDef.defType != DefinitionType.ARRAY) {
             throw new IDFinalException(varId);
@@ -184,7 +190,13 @@ public class LLVMActions implements NobleScriptListener {
     public void exitVariable_definition(NobleScriptParser.Variable_definitionContext ctx) {
         log("on exitVariable_definition");
         final Definition varDef = getVarDefinition(ctx.ID().getText());
-        final Value value = valueStack.pop();
+        Value value = valueStack.pop();
+
+        // Type casting
+        if (varDef.type == VarType.DOUBLE && (value.type == VALUE_INT || value.type == VALUE_INT_REGISTER)) {
+            generator.i32_to_double(value.content);
+            value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE);
+        }
 
         switch (value.type) {
             case VALUE_INT:

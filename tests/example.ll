@@ -7,13 +7,15 @@ declare i32 @scanf(i8*, ...)
 @strsd = constant [4 x i8] c"%lf\00"
 
 @a = global i32 0
+@b = global double 0.0
 define i32 @main() nounwind {
   %1 = mul i32 10, 2
   %2 = add i32 2, %1
   %3 = add i32 %2, 2
   store i32 %3, i32* @a
-  %4 = add i32 2, 2
-  %5 = add i32 %4, 2
+  %4 = sitofp i32 2 to double
+  store double %4, double* @b
+  %5 = add i32 2, 2
   %6 = add i32 %5, 2
   %7 = add i32 %6, 2
   %8 = add i32 %7, 2
@@ -24,6 +26,9 @@ define i32 @main() nounwind {
   %13 = add i32 %12, 2
   %14 = add i32 %13, 2
   %15 = add i32 %14, 2
-  %16 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %15)
+  %16 = add i32 %15, 2
+  %17 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %16)
+  %18 = load double, double* @b
+  %19 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %18)
   ret i32 0
 }

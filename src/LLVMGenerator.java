@@ -263,7 +263,7 @@ public class LLVMGenerator {
                 .append(register++)
                 .append(" = sitofp i32 ")
                 .append(content)
-                .append(" to double");
+                .append(" to double\n");
     }
 
     /**
