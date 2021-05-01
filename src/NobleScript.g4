@@ -26,9 +26,9 @@ array_definition: type ID BRACKET_OPEN INT_LITERAL BRACKET_CLOSE;
 
 expression : expression0;
 
-expression0 : expression1 | expression1 operator0 expression1;
-expression1 : expression2 | expression2 operator1 expression2;
-expression2 : expression3 | expression3 operator2 expression3;
+expression0 : expression1 | expression0 operator0 expression0;
+expression1 : expression2 | expression1 operator1 expression1;
+expression2 : expression3 | expression2 operator2 expression2;
 expression3 : PAR_OPEN expression0 PAR_CLOSE
             | value;
 
