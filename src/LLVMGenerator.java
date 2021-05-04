@@ -5,6 +5,7 @@ public class LLVMGenerator {
     private final StringBuilder buffer = new StringBuilder();
 
     private int register = 1;
+    private int stringRegister = 1;
 
     public int getRegister() {
         return register;
@@ -50,17 +51,85 @@ public class LLVMGenerator {
                 .append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double ")
                 .append(content)
                 .append(")\n");
-//        buffer.append("%")
-//                .append(register++)
-//                .append(" = load double, double* ")
-//                .append(isGlobal ? "@" : "%")
-//                .append(id)
-//                .append("\n")
-//                .append("%")
-//                .append(register++)
-//                .append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %")
-//                .append(register - 1)
-//                .append(")\n");
+    }
+
+    public void printf_string(String id, int length) {
+        buffer.append("%").append(register).append(" = getelementptr inbounds [").append(length + 1).append(" x i8], [").append(length + 1).append(" x i8]* @").append(id).append(", i32 0, i32 0\n");
+        register++;
+        buffer.append("%").append(register).append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strps, i32 0, i32 0), i8* %").append(register - 1).append(")\n");
+        register++;
+    }
+
+    public void printf_string_literal(String text) {
+        int str_len = text.length();
+        String str_type = "[" + (str_len + 2) + " x i8]";
+        header.append("@str" + stringRegister + " = constant" + str_type + " c\"" + text + "\\0A\\00\"\n");
+        buffer.append("%" + register + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( " + str_type + ", " + str_type + "* @str" + stringRegister + ", i32 0, i32 0))\n");
+        stringRegister++;
+        register++;
+    }
+
+    /**
+     * Scanners
+     */
+
+    public void scanf_i32() {
+        buffer.append("%")
+                .append(register++)
+                .append(" = alloca i32\n");
+        buffer.append("%")
+                .append(register++)
+                .append(" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @strsi, i32 0, i32 0), i32* %")
+                .append(register - 2)
+                .append(")\n");
+        buffer.append("%")
+                .append(register++)
+                .append(" = load i32, i32* %")
+                .append(register - 3)
+                .append("\n");
+    }
+
+    public void scanf_fouble() {
+        buffer.append("%")
+                .append(register++)
+                .append(" = alloca double");
+        buffer.append("%")
+                .append(register++)
+                .append(" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strsd, i32 0, i32 0), double* %")
+                .append(register - 2)
+                .append(")\n");
+        buffer.append("%")
+                .append(register++)
+                .append(" = load double, double* %")
+                .append(register - 3)
+                .append("\n");
+    }
+
+    /**
+     * String
+     */
+    public void assign_string(String id, String text, boolean global, String function) {
+        int len = text.length() + 1;
+        String str_type = "[" + len + " x i8]";
+        if (global) {
+            header.append("@")
+                    .append(id)
+                    .append(" = constant")
+                    .append(str_type)
+                    .append(" c\"")
+                    .append(text)
+                    .append("\\00\"\n");
+        } else {
+            header.append("@")
+                    .append(function)
+                    .append(".")
+                    .append(id)
+                    .append(" = constant")
+                    .append(str_type)
+                    .append(" c\"")
+                    .append(text)
+                    .append("\\00\"\n");
+        }
     }
 
     /**
@@ -233,12 +302,12 @@ public class LLVMGenerator {
                 .append("\n");
     }
 
-    public void i32_to_double(String content){
+    public void i32_to_double(String content) {
         buffer.append("%")
                 .append(register++)
                 .append(" = sitofp i32 ")
                 .append(content)
-                .append(" to double");
+                .append(" to double\n");
     }
 
     /**

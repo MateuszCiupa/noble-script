@@ -1,4 +1,4 @@
-// Generated from //wsl$/Ubuntu-20.04/home/ciupam/repos/noble-script/src\NobleScript.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Danie/Desktop/noble-script/src\NobleScript.g4 by ANTLR 4.9.1
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -206,4 +206,10 @@ public interface NobleScriptVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIf_statement(NobleScriptParser.If_statementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NobleScriptParser#read_op}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRead_op(NobleScriptParser.Read_opContext ctx);
 }

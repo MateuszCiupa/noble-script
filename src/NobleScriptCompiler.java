@@ -1,3 +1,4 @@
+import exceptions.NobleScriptException;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -21,7 +22,7 @@ public class NobleScriptCompiler {
 
             ParseTreeWalker walker = new ParseTreeWalker();
             LLVMGenerator generator = new LLVMGenerator();
-            walker.walk(new LLVMActions(generator, 1), tree);
+            walker.walk(new LLVMActions(generator, 0), tree);
 
             String lvmCode = generator.generate();
 
@@ -30,7 +31,8 @@ public class NobleScriptCompiler {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NobleScriptException e) {
+            System.err.println("Script is invalid: " + e.getMessage());
         }
-
     }
 }

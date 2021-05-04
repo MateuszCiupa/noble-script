@@ -26,9 +26,9 @@ array_definition: type ID BRACKET_OPEN INT_LITERAL BRACKET_CLOSE;
 
 expression : expression0;
 
-expression0 : expression1 | expression1 operator0 expression1;
-expression1 : expression2 | expression2 operator1 expression2;
-expression2 : expression3 | expression3 operator2 expression3;
+expression0 : expression1 | expression0 operator0 expression0;
+expression1 : expression2 | expression1 operator1 expression1;
+expression2 : expression3 | expression2 operator2 expression2;
 expression3 : PAR_OPEN expression0 PAR_CLOSE
             | value;
 
@@ -40,7 +40,7 @@ value: literal
 
 array_index: ID BRACKET_OPEN INT_LITERAL BRACKET_CLOSE;
 
-function_call_stm: ID '(' (expression)? (','expression)* ')' | READ | print_stm;
+function_call_stm: ID '(' (expression)? (','expression)* ')' | read_op | print_stm;
 print_stm: 'print(' expression ')';
 
 literal: primitive_literal;
@@ -58,7 +58,10 @@ compound_statement: if_statement | loop_statement;
 loop_statement: WHILE PAR_OPEN expression PAR_CLOSE BRACES_OPEN statement* BRACES_CLOSE;
 if_statement: IF PAR_OPEN expression PAR_CLOSE BRACES_OPEN statement* BRACES_CLOSE (ELIF PAR_OPEN expression PAR_CLOSE BRACES_OPEN statement* BRACES_CLOSE)* (ELSE BRACES_OPEN statement* BRACES_CLOSE)?;
 
-READ: 'read()';
+read_op: READ_INT | READ_DOUBLE;
+
+READ_DOUBLE: 'readDouble()';
+READ_INT: 'readInt()';
 RETURN: 'return';
 
 WHILE: 'while';
@@ -74,10 +77,10 @@ BRACKET_OPEN: '[';
 BRACKET_CLOSE: ']';
 
 NULL: 'null';
-INT_LITERAL: '-'?[1-9]+[0-9]*;
-DOUBLE_LITERAL: '-'?[1-9]+[0-9]*'.'[0-9]+;
+INT_LITERAL: '-'?([1-9]+[0-9]*)|('0');
+DOUBLE_LITERAL: '-'?([1-9]+[0-9]*'.'[0-9]+)|'-'?('0.'[0-9]+);
 BOOLEAN_LITERAL: 'true' | 'false';
-STRING_LITERAL: '"'[^"]*'"';
+STRING_LITERAL: '"'(~('"'))*'"';
 
 BOOLEAN_TYPE: 'boolean';
 INT_TYPE: 'int';
