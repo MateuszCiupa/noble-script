@@ -6,29 +6,12 @@ declare i32 @scanf(i8*, ...)
 @strsi = constant [3 x i8] c"%d\00"
 @strsd = constant [4 x i8] c"%lf\00"
 
-@a = global i32 0
-@b = global double 0.0
+@a = constant[22 x i8] c"12ds gdfgfd yg gf fd3\00"
+@main.a = constant[33 x i8] c"zzzzzzzzzzz12ds gdfgfd yg gf fd3\00"
 define i32 @main() nounwind {
-  %1 = mul i32 10, 2
-  %2 = add i32 2, %1
-  %3 = add i32 %2, 2
-  store i32 %3, i32* @a
-  %4 = sitofp i32 2 to double
-  store double %4, double* @b
-  %5 = add i32 2, 2
-  %6 = add i32 %5, 2
-  %7 = add i32 %6, 2
-  %8 = add i32 %7, 2
-  %9 = add i32 %8, 2
-  %10 = add i32 %9, 2
-  %11 = add i32 %10, 2
-  %12 = add i32 %11, 2
-  %13 = add i32 %12, 2
-  %14 = add i32 %13, 2
-  %15 = add i32 %14, 2
-  %16 = add i32 %15, 2
-  %17 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %16)
-  %18 = load double, double* @b
-  %19 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %18)
+  %1 = getelementptr inbounds [33 x i8], [33 x i8]* @main.a, i32 0, i32 0
+  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strps, i32 0, i32 0), i8* %1)
+  %3 = getelementptr inbounds [22 x i8], [22 x i8]* @a, i32 0, i32 0
+  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strps, i32 0, i32 0), i8* %3)
   ret i32 0
 }

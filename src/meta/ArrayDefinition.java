@@ -7,8 +7,8 @@ public class ArrayDefinition extends Definition {
 
     final public int size;
 
-    public ArrayDefinition(String id, VarType type, boolean isGlobal, int size) {
-        super(id, type, DefinitionType.ARRAY, isGlobal);
+    public ArrayDefinition(String id, VarType type, String scope, int size) {
+        super(id, type, DefinitionType.ARRAY, scope);
         this.size = size;
     }
 }

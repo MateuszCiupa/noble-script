@@ -52,6 +52,13 @@ public class LLVMGenerator {
                 .append(")\n");
     }
 
+    public void printf_string(String id, int length) {
+        buffer.append("%").append(register).append(" = getelementptr inbounds [").append(length + 1).append(" x i8], [").append(length + 1).append(" x i8]* @").append(id).append(", i32 0, i32 0\n");
+        register++;
+        buffer.append("%").append(register).append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strps, i32 0, i32 0), i8* %").append(register - 1).append(")\n");
+        register++;
+    }
+
     /**
      * Scanners
      */

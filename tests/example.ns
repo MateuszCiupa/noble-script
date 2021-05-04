@@ -1,4 +1,10 @@
-int a = 2+10*2+2;
-double b = 2;
-print(2+2+2+2+2+2+2+2+2+2+2+2+2);
-print(b);
+string a = "12ds gdfgfd yg gf fd3";
+
+int main(){
+
+    string a = "zzzzzzzzzzz12ds gdfgfd yg gf fd3";
+    print(a);
+}
+print(a);
+
+

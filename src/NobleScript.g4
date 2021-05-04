@@ -80,7 +80,7 @@ NULL: 'null';
 INT_LITERAL: '-'?[1-9]+[0-9]*;
 DOUBLE_LITERAL: '-'?[1-9]+[0-9]*'.'[0-9]+;
 BOOLEAN_LITERAL: 'true' | 'false';
-STRING_LITERAL: '"'[^"]*'"';
+STRING_LITERAL: '"'(~('"'))*'"';
 
 BOOLEAN_TYPE: 'boolean';
 INT_TYPE: 'int';

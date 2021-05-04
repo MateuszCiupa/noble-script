@@ -22,7 +22,7 @@ public class NobleScriptCompiler {
 
             ParseTreeWalker walker = new ParseTreeWalker();
             LLVMGenerator generator = new LLVMGenerator();
-            walker.walk(new LLVMActions(generator, 1), tree);
+            walker.walk(new LLVMActions(generator, 0), tree);
 
             String lvmCode = generator.generate();
 
