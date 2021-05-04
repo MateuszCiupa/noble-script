@@ -77,8 +77,8 @@ BRACKET_OPEN: '[';
 BRACKET_CLOSE: ']';
 
 NULL: 'null';
-INT_LITERAL: '-'?[1-9]+[0-9]*;
-DOUBLE_LITERAL: '-'?[1-9]+[0-9]*'.'[0-9]+;
+INT_LITERAL: '-'?([1-9]+[0-9]*)|('0');
+DOUBLE_LITERAL: '-'?([1-9]+[0-9]*'.'[0-9]+)|'-'?('0.'[0-9]+);
 BOOLEAN_LITERAL: 'true' | 'false';
 STRING_LITERAL: '"'(~('"'))*'"';
 
