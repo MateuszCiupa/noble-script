@@ -215,6 +215,8 @@ public class LLVMActions implements NobleScriptListener {
                 generator.declare_double(varDef.id, varDef.isGlobal);
                 generator.assign_double(varDef.id, value.content, varDef.isGlobal);
                 break;
+            case VALUE_STRING:
+                generator.assign_string(varDef.id, );
             default:
                 // TODO add more types in exitVariable_definition
                 throw new UnsupportedOperationException("Variable definition for type: " + value.type);

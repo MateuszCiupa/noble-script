@@ -89,6 +89,33 @@ public class LLVMGenerator {
     }
 
     /**
+     * String
+     */
+    public void assign_string(String id, String text, boolean global, String function) {
+        int len = text.length() + 1;
+        String str_type = "[" + len + " x i8]";
+        if (global) {
+            header.append("@")
+                    .append(id)
+                    .append(" = constant")
+                    .append(str_type)
+                    .append(" c\"")
+                    .append(text)
+                    .append("\\00\"\n");
+        } else {
+            header.append("@")
+                    .append(function)
+                    .append(".")
+                    .append(id)
+                    .append(" = constant")
+                    .append(str_type)
+                    .append(" c\"")
+                    .append(text)
+                    .append("\\00\"\n");
+        }
+    }
+
+    /**
      * Array
      */
     private void declare_array(String id, int size, boolean isGlobal, String type) {
