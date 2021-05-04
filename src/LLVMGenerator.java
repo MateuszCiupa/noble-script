@@ -5,6 +5,7 @@ public class LLVMGenerator {
     private final StringBuilder buffer = new StringBuilder();
 
     private int register = 1;
+    private int stringRegister = 1;
 
     public int getRegister() {
         return register;
@@ -56,6 +57,15 @@ public class LLVMGenerator {
         buffer.append("%").append(register).append(" = getelementptr inbounds [").append(length + 1).append(" x i8], [").append(length + 1).append(" x i8]* @").append(id).append(", i32 0, i32 0\n");
         register++;
         buffer.append("%").append(register).append(" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strps, i32 0, i32 0), i8* %").append(register - 1).append(")\n");
+        register++;
+    }
+
+    public void printf_string_literal(String text) {
+        int str_len = text.length();
+        String str_type = "[" + (str_len + 2) + " x i8]";
+        header.append("@str" + stringRegister + " = constant" + str_type + " c\"" + text + "\\0A\\00\"\n");
+        buffer.append("%" + register + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( " + str_type + ", " + str_type + "* @str" + stringRegister + ", i32 0, i32 0))\n");
+        stringRegister++;
         register++;
     }
 

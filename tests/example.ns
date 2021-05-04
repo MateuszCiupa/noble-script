@@ -3,7 +3,7 @@ string a = "12ds gdfgfd yg gf fd3";
 int main(){
 
     string a = "zzzzzzzzzzz12ds gdfgfd yg gf fd3";
-    print(a);
+    print("aaaaa");
 }
 print(a);
 

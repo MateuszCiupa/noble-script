@@ -522,6 +522,8 @@ public class LLVMActions implements NobleScriptListener {
             generator.printf_double(value.content);
         } else if (value.type == VALUE_STRING_REGISTER) {
             generator.printf_string(value.content, ((StringValue) value).length);
+        } else if (value.type == VALUE_STRING) {
+            generator.printf_string_literal(value.content.substring(1, value.content.length() - 1));
         } else {
             throw new UnsupportedOperationException("Print statement for type: " + value.type);
         }
