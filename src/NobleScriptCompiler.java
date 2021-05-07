@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 public class NobleScriptCompiler {
 
@@ -29,6 +30,10 @@ public class NobleScriptCompiler {
             try (FileWriter fw = new FileWriter("./tests/example.ll")) {
                 fw.write(lvmCode);
             }
+        } catch (UnsupportedOperationException e) {
+            System.err.println("Script uses features that are not implemented yet.");
+        } catch (NobleScriptException e) {
+            System.err.println("Script is invalid: " + e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NobleScriptException e) {

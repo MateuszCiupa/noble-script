@@ -60,7 +60,7 @@ public class LLVMActions implements NobleScriptListener {
         Value value = valueStack.pop();
 
         // Check if variable was defined in function scopes
-        Definition varDef = getVarDefinition(varId, ctx.getStart().getLine());
+        Definition varDef = getVarDefinition(varId, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
 
         // Type casting
         if (varDef.type == VarType.DOUBLE && (value.type == VALUE_INT || value.type == VALUE_INT_REGISTER)) {
@@ -69,14 +69,14 @@ public class LLVMActions implements NobleScriptListener {
         }
 
         if (varDef.defType != DefinitionType.VARIABLE && varDef.defType != DefinitionType.ARRAY) {
-            throw new IDFinalException(varId, ctx.getStart().getLine());
+            throw new IDFinalException(varId, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
         }
 
         switch (value.type) {
             case VALUE_INT:
             case VALUE_INT_REGISTER:
                 if (varDef.type != VarType.INT) {
-                    throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine());
+                    throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
                 // ARRAY ASSIGN STATEMENT
                 if (ctx.INT_LITERAL() != null) {
@@ -90,7 +90,7 @@ public class LLVMActions implements NobleScriptListener {
             case VALUE_DOUBLE:
             case VALUE_DOUBLE_REGISTER:
                 if (varDef.type != VarType.DOUBLE) {
-                    throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine());
+                    throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
 
                 // ARRAY ASSIGN STATEMENT
@@ -150,10 +150,10 @@ public class LLVMActions implements NobleScriptListener {
 
         // Check if there's a function of the same stackId
         if (functionDefs.containsKey(newScopeId)) {
-            throw new IDAlreadyDefinedException(newFunId, scopeId, ctx.getStart().getLine());
+            throw new IDAlreadyDefinedException(newFunId, scopeId, ctx.getStart().getLine(), ctx.PAR_OPEN().getSymbol().getCharPositionInLine());
         }
 
-        verifyIdIsAvailableInCurrentScope(newFunId, ctx.getStart().getLine());
+        verifyIdIsAvailableInCurrentScope(newFunId, ctx.getStart().getLine(), ctx.PAR_OPEN().getSymbol().getCharPositionInLine());
 
         functionDefs.get(scopeId).put(newFunId, newFunDef);
         functionDefs.put(newScopeId, new HashMap<>());
@@ -185,7 +185,7 @@ public class LLVMActions implements NobleScriptListener {
 
         // Check function scope
         final String scopeId = functionStack.empty() ? GLOBAL_SCOPE_STACK_ID : functionStack.peek();
-        verifyIdIsAvailableInCurrentScope(newVarId, ctx.getStart().getLine());
+        verifyIdIsAvailableInCurrentScope(newVarId, ctx.getStart().getLine(), ctx.ID().getSymbol().getCharPositionInLine());
 
         functionDefs.get(scopeId).put(newVarId, newVarDef);
     }
@@ -193,7 +193,7 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitVariable_definition(NobleScriptParser.Variable_definitionContext ctx) {
         log("on exitVariable_definition");
-        final Definition varDef = getVarDefinition(ctx.ID().getText(), ctx.getStart().getLine());
+        final Definition varDef = getVarDefinition(ctx.ID().getText(), ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine());
         Value value = valueStack.pop();
 
         // Type casting
@@ -206,7 +206,7 @@ public class LLVMActions implements NobleScriptListener {
             case VALUE_INT:
             case VALUE_INT_REGISTER:
                 if (varDef.type != VarType.INT) {
-                    throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine());
+                    throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
                 generator.declare_i32(varDef.id, varDef.scope == null);
                 generator.assign_i32(varDef.id, value.content, varDef.scope == null);
@@ -214,12 +214,15 @@ public class LLVMActions implements NobleScriptListener {
             case VALUE_DOUBLE:
             case VALUE_DOUBLE_REGISTER:
                 if (varDef.type != VarType.DOUBLE) {
-                    throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine());
+                    throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
                 generator.declare_double(varDef.id, varDef.scope == null);
                 generator.assign_double(varDef.id, value.content, varDef.scope == null);
                 break;
             case VALUE_STRING:
+                if (varDef.type != VarType.STRING) {
+                    throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
+                }
                 String content = ctx.expression().expression0().expression1().expression2().expression3().value().getText();
                 content = content.substring(1, content.length() - 1);
                 ((StringDefinition) varDef).length = content.length();
@@ -241,7 +244,7 @@ public class LLVMActions implements NobleScriptListener {
 
         // Check function scope
         final String scopeId = functionStack.empty() ? GLOBAL_SCOPE_STACK_ID : functionStack.peek();
-        verifyIdIsAvailableInCurrentScope(newArrayId, ctx.getStart().getLine());
+        verifyIdIsAvailableInCurrentScope(newArrayId, ctx.getStart().getLine(), ctx.ID().getSymbol().getCharPositionInLine());
 
         functionDefs.get(scopeId).put(newArrayId, newArrayDef);
 
@@ -318,7 +321,7 @@ public class LLVMActions implements NobleScriptListener {
             if (right.type.notEquals(left.type)) {
                 TerminalNode token = ctx.operator1().MINUS_OP();
                 if (token == null) token = ctx.operator1().PLUS_OP();
-                throw new TypeMismatchException("Invalid type at line: " + token.getSymbol().getLine(), ctx.getStart().getLine());
+                throw new TypeMismatchException("Invalid type at line: " + token.getSymbol().getLine(), token.getSymbol().getLine(), token.getSymbol().getCharPositionInLine());
             }
 
             final Value result;
@@ -385,7 +388,7 @@ public class LLVMActions implements NobleScriptListener {
             if (right.type.notEquals(left.type)) {
                 TerminalNode token = ctx.operator2().DIV_OP();
                 if (token == null) token = ctx.operator2().MUL_OP();
-                throw new TypeMismatchException("Invalid type at line: " + token.getSymbol().getLine(), ctx.getStart().getLine());
+                throw new TypeMismatchException("Invalid type at line: " + token.getSymbol().getLine(), token.getSymbol().getLine(), token.getSymbol().getCharPositionInLine());
             }
 
             final Value result;
@@ -438,7 +441,7 @@ public class LLVMActions implements NobleScriptListener {
             final String valueId = ctx.ID().getText();
 
             // Check if variable was defined in any scope
-            Definition varDef = getVarDefinition(valueId, ctx.getStart().getLine());
+            Definition varDef = getVarDefinition(valueId, ctx.getStart().getLine(), ctx.ID().getSymbol().getCharPositionInLine());
 
             // TODO more types
             final Value value;
@@ -462,11 +465,11 @@ public class LLVMActions implements NobleScriptListener {
 
         } else if (ctx.array_index() != null) {
             final String arrayId = ctx.array_index().ID().getText();
-            final ArrayDefinition arrayDef = (ArrayDefinition) getVarDefinition(arrayId, ctx.getStart().getLine());
+            final ArrayDefinition arrayDef = (ArrayDefinition) getVarDefinition(arrayId, ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
             final int indexValue = Integer.parseInt(ctx.array_index().INT_LITERAL().getText());
 
             if (indexValue >= arrayDef.size) {
-                throw new ArrayIndexOutOfBoundException(arrayDef, indexValue, ctx.getStart().getLine());
+                throw new ArrayIndexOutOfBoundException(arrayDef, indexValue, ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
             }
 
             final Value value;
@@ -708,7 +711,7 @@ public class LLVMActions implements NobleScriptListener {
     public void exitEveryRule(ParserRuleContext parserRuleContext) {
     }
 
-    private Definition getVarDefinition(String varId, int line) {
+    private Definition getVarDefinition(String varId, int line, int col) {
         // Check if variable was defined in any scope
         final String scopeId = functionStack.empty() ? "" : functionStack.peek();
         String[] scopes = scopeId.split("\\.");
@@ -725,16 +728,16 @@ public class LLVMActions implements NobleScriptListener {
         if (functionDefs.get(GLOBAL_SCOPE_STACK_ID).containsKey(varId)) {
             return functionDefs.get(GLOBAL_SCOPE_STACK_ID).get(varId);
         } else {
-            throw new IDNotDefinedException(varId, line);
+            throw new IDNotDefinedException(varId, line, col);
         }
     }
 
-    private void verifyIdIsAvailableInCurrentScope(String id, int line) {
+    private void verifyIdIsAvailableInCurrentScope(String id, int line, int col) {
         // Check function scope
         final String scopeId = functionStack.empty() ? GLOBAL_SCOPE_STACK_ID : functionStack.peek();
         if (functionDefs.containsKey(scopeId)) {
             if (functionDefs.get(scopeId).containsKey(id)) {
-                throw new IDAlreadyDefinedException(id, scopeId, line);
+                throw new IDAlreadyDefinedException(id, scopeId, line, col);
             }
         } else {
             throw new IllegalStateException("ID {" + id + "} is not accessible in current scope {" + scopeId + "}");
