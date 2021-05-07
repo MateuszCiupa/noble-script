@@ -36,6 +36,8 @@ public class NobleScriptCompiler {
             System.err.println("Script is invalid: " + e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NobleScriptException e) {
+            System.err.println("Script is invalid: " + e.getMessage());
         }
     }
 }
