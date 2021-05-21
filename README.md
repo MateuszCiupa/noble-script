@@ -9,3 +9,13 @@ Planned features
 - error messages,
 - arrays,
 - strings.
+
+# Milestone 2
+- compound statements,
+- functions,
+- variable scopes,
+
+# Extra:
+- ?classes,
+- structures,  
+- dynamic types,
