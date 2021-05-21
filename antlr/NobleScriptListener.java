@@ -1,4 +1,4 @@
-// Generated from C:/Users/Danie/Desktop/noble-script/src\NobleScript.g4 by ANTLR 4.9.1
+// Generated from //wsl$/Ubuntu-20.04/home/ciupam/repos/noble-script/src\NobleScript.g4 by ANTLR 4.9.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -336,6 +336,46 @@ public interface NobleScriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIf_statement(NobleScriptParser.If_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#elif_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterElif_statement(NobleScriptParser.Elif_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#elif_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitElif_statement(NobleScriptParser.Elif_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#else_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterElse_statement(NobleScriptParser.Else_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#else_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitElse_statement(NobleScriptParser.Else_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#block_open}.
+	 * @param ctx the parse tree
+	 */
+	void enterBlock_open(NobleScriptParser.Block_openContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#block_open}.
+	 * @param ctx the parse tree
+	 */
+	void exitBlock_open(NobleScriptParser.Block_openContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#block_close}.
+	 * @param ctx the parse tree
+	 */
+	void enterBlock_close(NobleScriptParser.Block_closeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#block_close}.
+	 * @param ctx the parse tree
+	 */
+	void exitBlock_close(NobleScriptParser.Block_closeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NobleScriptParser#read_op}.
 	 * @param ctx the parse tree

@@ -3,6 +3,7 @@ import meta.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import types.BlockType;
 import types.DefinitionType;
 import types.ValueType;
 import types.VarType;
@@ -675,6 +676,64 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitIf_statement(NobleScriptParser.If_statementContext ctx) {
         log("on exitIf_statement");
+    }
+
+    @Override
+    public void enterElif_statement(NobleScriptParser.Elif_statementContext ctx) {
+        log("on enterElif_statement");
+    }
+
+    @Override
+    public void exitElif_statement(NobleScriptParser.Elif_statementContext ctx) {
+        log("on exitElif_statement");
+    }
+
+    @Override
+    public void enterElse_statement(NobleScriptParser.Else_statementContext ctx) {
+        log("on enterElse_statement");
+    }
+
+    @Override
+    public void exitElse_statement(NobleScriptParser.Else_statementContext ctx) {
+        log("on exitElse_statement");
+    }
+
+    @Override
+    public void enterBlock_open(NobleScriptParser.Block_openContext ctx) {
+        log("on enterBlock_open");
+        switch (blockStack.peek()){
+            case IF_BLOCK:
+                generator.if_start();
+                break;
+            case FUNCTION_BLOCK:
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public void exitBlock_open(NobleScriptParser.Block_openContext ctx) {
+        log("on exitBlock_open");
+    }
+
+    @Override
+    public void enterBlock_close(NobleScriptParser.Block_closeContext ctx) {
+        log("on enterBlock_close");
+    }
+
+    @Override
+    public void exitBlock_close(NobleScriptParser.Block_closeContext ctx) {
+        log("on exitBlock_close");
+        switch (blockStack.pop()){
+            case IF_BLOCK:
+                generator.if_end();
+                break;
+            case FUNCTION_BLOCK:
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override

@@ -1,3 +1,5 @@
+import java.util.Stack;
+
 public class LLVMGenerator {
 
     private final StringBuilder header = new StringBuilder();
@@ -5,6 +7,7 @@ public class LLVMGenerator {
     private final StringBuilder buffer = new StringBuilder();
 
     private int register = 1;
+    private int br = 0;
     private int stringRegister = 1;
 
     public int getRegister() {
@@ -103,6 +106,27 @@ public class LLVMGenerator {
                 .append(" = load double, double* %")
                 .append(register - 3)
                 .append("\n");
+    }
+
+    /**
+     * IF
+     */
+    public void icmp(String valueLeft, String valueRight) {
+        buffer.append("%").append(register++).append(" = icmp eq i32 ").append(valueLeft).append(", ").append(valueRight).append("\n");
+//       buffer += "%" + reg + " = icmp eq i32 %" + (reg - 1) + ", " + value + "\n";
+    }
+
+    public void if_start() {
+        br++;
+        buffer.append("br i1 %" + (register - 1) + ", label %true" + br + ", label %false" + br + "\n");
+        buffer.append("true").append(br).append(":\n");
+        br_stack.push(br);
+    }
+
+    public void if_end() {
+        int b = br_stack.pop();
+        buffer.append("br label %false" + b + "\n");
+        buffer.append("false" + b + ":\n");
     }
 
     /**
