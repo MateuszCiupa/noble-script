@@ -10,6 +10,8 @@ public class LLVMGenerator {
     private int br = 0;
     private int stringRegister = 1;
 
+    static Stack<Integer> br_stack = new Stack<>();
+
     public int getRegister() {
         return register;
     }
@@ -111,9 +113,8 @@ public class LLVMGenerator {
     /**
      * IF
      */
-    public void icmp(String valueLeft, String valueRight) {
-        buffer.append("%").append(register++).append(" = icmp eq i32 ").append(valueLeft).append(", ").append(valueRight).append("\n");
-//       buffer += "%" + reg + " = icmp eq i32 %" + (reg - 1) + ", " + value + "\n";
+    public void icmp(String valueLeft, String valueRight, String code) {
+        buffer.append("%").append(register++).append(" = icmp ").append(code).append(" i32 ").append(valueLeft).append(", ").append(valueRight).append("\n");
     }
 
     public void if_start() {

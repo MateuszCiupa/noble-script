@@ -7,7 +7,7 @@ declare i32 @scanf(i8*, ...)
 @strsd = constant [4 x i8] c"%lf\00"
 
 define i32 @main() nounwind {
-  %1 = icmp eq i32 3, 3
+  %1 = icmp sge i32 2, 2
   br i1 %1, label %true1, label %false1
   true1:
   %c = alloca i32

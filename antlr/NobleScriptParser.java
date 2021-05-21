@@ -20,9 +20,10 @@ public class NobleScriptParser extends Parser {
 		IF=8, ELIF=9, ELSE=10, PAR_OPEN=11, PAR_CLOSE=12, BRACES_OPEN=13, BRACES_CLOSE=14, 
 		BRACKET_OPEN=15, BRACKET_CLOSE=16, NULL=17, INT_LITERAL=18, DOUBLE_LITERAL=19, 
 		BOOLEAN_LITERAL=20, STRING_LITERAL=21, BOOLEAN_TYPE=22, INT_TYPE=23, DOUBLE_TYPE=24, 
-		STRING_TYPE=25, ID=26, SEMICOL=27, ASSIGN_OP=28, LESSER_THAN_OP=29, GREATER_THAN_OP=30, 
-		EQUAL_OP=31, NOT_EQUAL_OP=32, PLUS_OP=33, MINUS_OP=34, POW_OP=35, DIV_OP=36, 
-		MUL_OP=37, WHITESPACE=38, NEWLINE=39;
+		STRING_TYPE=25, ID=26, SEMICOL=27, ASSIGN_OP=28, LESSER_THAN_OP=29, LESSER_THAN_OR_EQUAL_OP=30, 
+		GREATER_THAN_OP=31, GREATER_THAN_OR_EQUAL_OP=32, EQUAL_OP=33, NOT_EQUAL_OP=34, 
+		PLUS_OP=35, MINUS_OP=36, POW_OP=37, DIV_OP=38, MUL_OP=39, WHITESPACE=40, 
+		NEWLINE=41;
 	public static final int
 		RULE_program = 0, RULE_statement = 1, RULE_assign_statement = 2, RULE_return_statement = 3, 
 		RULE_definition = 4, RULE_structure_definition = 5, RULE_function_definition = 6, 
@@ -52,8 +53,8 @@ public class NobleScriptParser extends Parser {
 			null, "'struct'", "','", "'print('", "'readDouble()'", "'readInt()'", 
 			"'return'", "'while'", "'if'", "'elif'", "'else'", "'('", "')'", "'{'", 
 			"'}'", "'['", "']'", "'null'", null, null, null, null, "'boolean'", "'int'", 
-			"'double'", "'string'", null, "';'", "'='", "'<'", "'>'", "'=='", "'!='", 
-			"'+'", "'-'", "'^'", "'/'", "'*'"
+			"'double'", "'string'", null, "';'", "'='", "'<'", "'<='", "'>'", "'>='", 
+			"'=='", "'!='", "'+'", "'-'", "'^'", "'/'", "'*'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -63,9 +64,9 @@ public class NobleScriptParser extends Parser {
 			"IF", "ELIF", "ELSE", "PAR_OPEN", "PAR_CLOSE", "BRACES_OPEN", "BRACES_CLOSE", 
 			"BRACKET_OPEN", "BRACKET_CLOSE", "NULL", "INT_LITERAL", "DOUBLE_LITERAL", 
 			"BOOLEAN_LITERAL", "STRING_LITERAL", "BOOLEAN_TYPE", "INT_TYPE", "DOUBLE_TYPE", 
-			"STRING_TYPE", "ID", "SEMICOL", "ASSIGN_OP", "LESSER_THAN_OP", "GREATER_THAN_OP", 
-			"EQUAL_OP", "NOT_EQUAL_OP", "PLUS_OP", "MINUS_OP", "POW_OP", "DIV_OP", 
-			"MUL_OP", "WHITESPACE", "NEWLINE"
+			"STRING_TYPE", "ID", "SEMICOL", "ASSIGN_OP", "LESSER_THAN_OP", "LESSER_THAN_OR_EQUAL_OP", 
+			"GREATER_THAN_OP", "GREATER_THAN_OR_EQUAL_OP", "EQUAL_OP", "NOT_EQUAL_OP", 
+			"PLUS_OP", "MINUS_OP", "POW_OP", "DIV_OP", "MUL_OP", "WHITESPACE", "NEWLINE"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -1885,6 +1886,8 @@ public class NobleScriptParser extends Parser {
 		public TerminalNode GREATER_THAN_OP() { return getToken(NobleScriptParser.GREATER_THAN_OP, 0); }
 		public TerminalNode EQUAL_OP() { return getToken(NobleScriptParser.EQUAL_OP, 0); }
 		public TerminalNode NOT_EQUAL_OP() { return getToken(NobleScriptParser.NOT_EQUAL_OP, 0); }
+		public TerminalNode GREATER_THAN_OR_EQUAL_OP() { return getToken(NobleScriptParser.GREATER_THAN_OR_EQUAL_OP, 0); }
+		public TerminalNode LESSER_THAN_OR_EQUAL_OP() { return getToken(NobleScriptParser.LESSER_THAN_OR_EQUAL_OP, 0); }
 		public Operator0Context(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1913,7 +1916,7 @@ public class NobleScriptParser extends Parser {
 			{
 			setState(255);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LESSER_THAN_OP) | (1L << GREATER_THAN_OP) | (1L << EQUAL_OP) | (1L << NOT_EQUAL_OP))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LESSER_THAN_OP) | (1L << LESSER_THAN_OR_EQUAL_OP) | (1L << GREATER_THAN_OP) | (1L << GREATER_THAN_OR_EQUAL_OP) | (1L << EQUAL_OP) | (1L << NOT_EQUAL_OP))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -2524,7 +2527,7 @@ public class NobleScriptParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3)\u0147\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3+\u0147\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -2550,8 +2553,8 @@ public class NobleScriptParser extends Parser {
 		"\n\36\f\36\16\36\u0133\13\36\3\36\3\36\3\37\3\37\3\37\7\37\u013a\n\37"+
 		"\f\37\16\37\u013d\13\37\3\37\3\37\3 \3 \3!\3!\3\"\3\"\3\"\2\5\26\30\32"+
 		"#\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@B\2"+
-		"\7\4\2\23\23\30\33\3\2&\'\3\2#$\3\2\37\"\3\2\6\7\2\u0148\2G\3\2\2\2\4"+
-		"W\3\2\2\2\6b\3\2\2\2\bd\3\2\2\2\no\3\2\2\2\fq\3\2\2\2\16}\3\2\2\2\20\u0098"+
+		"\7\4\2\23\23\30\33\3\2()\3\2%&\3\2\37$\3\2\6\7\2\u0148\2G\3\2\2\2\4W\3"+
+		"\2\2\2\6b\3\2\2\2\bd\3\2\2\2\no\3\2\2\2\fq\3\2\2\2\16}\3\2\2\2\20\u0098"+
 		"\3\2\2\2\22\u009d\3\2\2\2\24\u00a3\3\2\2\2\26\u00a5\3\2\2\2\30\u00b1\3"+
 		"\2\2\2\32\u00bd\3\2\2\2\34\u00ce\3\2\2\2\36\u00d4\3\2\2\2 \u00d6\3\2\2"+
 		"\2\"\u00ea\3\2\2\2$\u00ec\3\2\2\2&\u00f0\3\2\2\2(\u00f7\3\2\2\2*\u00f9"+

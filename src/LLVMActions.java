@@ -16,6 +16,7 @@ public class LLVMActions implements NobleScriptListener {
     private final Map<String, Map<String, Definition>> functionDefs = new HashMap<>();
     private final Stack<String> functionStack = new Stack<>();
     private final Stack<Value> valueStack = new Stack<>();
+    private final Stack<BlockType> blockStack = new Stack<>();
 
     private final LLVMGenerator generator;
 
@@ -142,6 +143,8 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterFunction_definition(NobleScriptParser.Function_definitionContext ctx) {
         log("on enterFunction_definition");
+        blockStack.push(BlockType.FUNCTION_BLOCK);
+
         final VarType newFunType = VarType.getType(ctx.type(0).getText());
         final String newFunId = ctx.ID(0).getText();
         final Definition newFunDef = new Definition(newFunId, newFunType, DefinitionType.FUNCTION, functionStack.isEmpty() ? null : functionStack.peek());
@@ -274,12 +277,32 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitExpression(NobleScriptParser.ExpressionContext ctx) {
         log("on exitExpression");
+        if (ctx.expression0() != null) {
+            if (ctx.expression0().operator0() != null) {
+                Value right = valueStack.pop();
+                Value left = valueStack.pop();
+
+                if (ctx.expression0().operator0().EQUAL_OP() != null) {
+                    generator.icmp(left.content, right.content, "eq");
+                } else if (ctx.expression0().operator0().NOT_EQUAL_OP() != null) {
+                    generator.icmp(left.content, right.content, "nq");
+                } else if (ctx.expression0().operator0().GREATER_THAN_OP() != null) {
+                    generator.icmp(left.content, right.content, "sgt");
+                } else if (ctx.expression0().operator0().LESSER_THAN_OP() != null) {
+                    generator.icmp(left.content, right.content, "slt");
+                } else if (ctx.expression0().operator0().GREATER_THAN_OR_EQUAL_OP() != null) {
+                    generator.icmp(left.content, right.content, "sge");
+                } else if (ctx.expression0().operator0().LESSER_THAN_OR_EQUAL_OP() != null) {
+                    generator.icmp(left.content, right.content, "sle");
+                }
+                valueStack.push(new Value("%" + (generator.getRegister() - 1), VALUE_BOOLEAN_REGISTER));
+            }
+        }
     }
 
     @Override
     public void enterExpression0(NobleScriptParser.Expression0Context ctx) {
         log("on enterExpression0");
-
     }
 
     @Override
@@ -671,6 +694,7 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterIf_statement(NobleScriptParser.If_statementContext ctx) {
         log("on enterIf_statement");
+        blockStack.push(BlockType.IF_BLOCK);
     }
 
     @Override
@@ -701,7 +725,7 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterBlock_open(NobleScriptParser.Block_openContext ctx) {
         log("on enterBlock_open");
-        switch (blockStack.peek()){
+        switch (blockStack.peek()) {
             case IF_BLOCK:
                 generator.if_start();
                 break;
@@ -725,7 +749,7 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitBlock_close(NobleScriptParser.Block_closeContext ctx) {
         log("on exitBlock_close");
-        switch (blockStack.pop()){
+        switch (blockStack.pop()) {
             case IF_BLOCK:
                 generator.if_end();
                 break;
