@@ -1,3 +1,5 @@
+import java.util.Stack;
+
 public class LLVMGenerator {
 
     private final StringBuilder header = new StringBuilder();
@@ -5,11 +7,16 @@ public class LLVMGenerator {
     private final StringBuilder buffer = new StringBuilder();
 
     private int register = 1;
+    private int br = 0;
     private int stringRegister = 1;
+
+    static Stack<Integer> br_stack = new Stack<>();
 
     public int getRegister() {
         return register;
     }
+
+    public int getBr(){ return br; }
 
     public String generate() {
         main.append(buffer);
@@ -103,6 +110,52 @@ public class LLVMGenerator {
                 .append(" = load double, double* %")
                 .append(register - 3)
                 .append("\n");
+    }
+
+    /**
+     * IF
+     */
+    public void icmp(String valueLeft, String valueRight, String code) {
+        buffer.append("%").append(register++).append(" = icmp ").append(code).append(" i32 ").append(valueLeft).append(", ").append(valueRight).append("\n");
+    }
+
+    public void if_start() {
+        br++;
+        buffer.append("br i1 %" + (register - 1) + ", label %true" + br + ", label %false" + br + "\n");
+        buffer.append("true").append(br).append(":\n");
+        br_stack.push(br);
+    }
+
+    public void if_end() {
+        int b = br_stack.pop();
+        buffer.append("br label %false" + b + "\n");
+        buffer.append("false" + b + ":\n");
+    }
+
+    /**
+     * WHILE
+     */
+    public void while_start(){
+        br_stack.push(br);
+        buffer.append("br label %whilestart" + br + "\n");
+        buffer.append("whilestart" + br + ":\n");
+        br++;
+    }
+
+
+    public void whilebody_start() {
+        br_stack.push(br);
+        buffer.append("br i1 %" + (register - 1) + ", label %whiletrue" + br + ", label %whilefalse" + br + "\n");
+        buffer.append("whiletrue").append(br).append(":\n");
+    }
+
+    public void whilebody_end() {
+        int whilebody = br_stack.pop();
+        int whilestart_br = br_stack.pop();
+
+        buffer.append("br label %whilestart" + whilestart_br + "\n");
+        buffer.append("br label %whilefalse" + whilebody + "\n");
+        buffer.append("whilefalse" + whilebody + ":\n");
     }
 
     /**

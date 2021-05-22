@@ -15,4 +15,8 @@ public class Definition {
         this.defType = defType;
         this.scope = scope;
     }
+
+    public String getLlvmId(){
+        return (scope == null ? "" : scope + ".") + id;
+    }
 }

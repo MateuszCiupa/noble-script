@@ -3,6 +3,7 @@ import meta.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import types.BlockType;
 import types.DefinitionType;
 import types.ValueType;
 import types.VarType;
@@ -15,6 +16,7 @@ public class LLVMActions implements NobleScriptListener {
     private final Map<String, Map<String, Definition>> functionDefs = new HashMap<>();
     private final Stack<String> functionStack = new Stack<>();
     private final Stack<Value> valueStack = new Stack<>();
+    private final Stack<BlockType> blockStack = new Stack<>();
 
     private final LLVMGenerator generator;
 
@@ -82,9 +84,9 @@ public class LLVMActions implements NobleScriptListener {
                 if (ctx.INT_LITERAL() != null) {
                     int index = Integer.parseInt(ctx.INT_LITERAL().getText());
                     int size = ((ArrayDefinition) varDef).size;
-                    generator.assign_i32_array(varId, size, index, varDef.scope == null, value.content);
+                    generator.assign_i32_array(varDef.getLlvmId(), size, index, varDef.scope == null, value.content);
                 } else {
-                    generator.assign_i32(varId, value.content, varDef.scope == null);
+                    generator.assign_i32(varDef.getLlvmId(), value.content, varDef.scope == null);
                 }
                 break;
             case VALUE_DOUBLE:
@@ -97,9 +99,9 @@ public class LLVMActions implements NobleScriptListener {
                 if (ctx.INT_LITERAL() != null) {
                     int index = Integer.parseInt(ctx.INT_LITERAL().getText());
                     int size = ((ArrayDefinition) varDef).size;
-                    generator.assign_double_array(varId, size, index, varDef.scope == null, value.content);
+                    generator.assign_double_array(varDef.getLlvmId(), size, index, varDef.scope == null, value.content);
                 } else {
-                    generator.assign_double(varId, value.content, varDef.scope == null);
+                    generator.assign_double(varDef.getLlvmId(), value.content, varDef.scope == null);
                 }
                 break;
             default:
@@ -141,6 +143,8 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterFunction_definition(NobleScriptParser.Function_definitionContext ctx) {
         log("on enterFunction_definition");
+        blockStack.push(BlockType.FUNCTION_BLOCK);
+
         final VarType newFunType = VarType.getType(ctx.type(0).getText());
         final String newFunId = ctx.ID(0).getText();
         final Definition newFunDef = new Definition(newFunId, newFunType, DefinitionType.FUNCTION, functionStack.isEmpty() ? null : functionStack.peek());
@@ -178,9 +182,9 @@ public class LLVMActions implements NobleScriptListener {
         final Definition newVarDef;
 
         if (newVarType == VarType.STRING) {
-            newVarDef = new StringDefinition(newVarId, newVarType, DefinitionType.VARIABLE, functionStack.isEmpty() ? null : functionStack.peek(), -1);
+            newVarDef = new StringDefinition(newVarId, newVarType, DefinitionType.VARIABLE, functionStack.isEmpty() ? "" : functionStack.peek(), -1);
         } else {
-            newVarDef = new Definition(newVarId, newVarType, DefinitionType.VARIABLE, functionStack.isEmpty() ? null : functionStack.peek());
+            newVarDef = new Definition(newVarId, newVarType, DefinitionType.VARIABLE, functionStack.isEmpty() ? "" : functionStack.peek());
         }
 
         // Check function scope
@@ -208,16 +212,16 @@ public class LLVMActions implements NobleScriptListener {
                 if (varDef.type != VarType.INT) {
                     throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
-                generator.declare_i32(varDef.id, varDef.scope == null);
-                generator.assign_i32(varDef.id, value.content, varDef.scope == null);
+                generator.declare_i32(varDef.getLlvmId(), varDef.scope == null);
+                generator.assign_i32(varDef.getLlvmId(), value.content, varDef.scope == null);
                 break;
             case VALUE_DOUBLE:
             case VALUE_DOUBLE_REGISTER:
                 if (varDef.type != VarType.DOUBLE) {
                     throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
-                generator.declare_double(varDef.id, varDef.scope == null);
-                generator.assign_double(varDef.id, value.content, varDef.scope == null);
+                generator.declare_double(varDef.getLlvmId(), varDef.scope == null);
+                generator.assign_double(varDef.getLlvmId(), value.content, varDef.scope == null);
                 break;
             case VALUE_STRING:
                 if (varDef.type != VarType.STRING) {
@@ -250,10 +254,10 @@ public class LLVMActions implements NobleScriptListener {
 
         switch (newArrayType) {
             case INT:
-                generator.declare_i32_array(newArrayId, newArraySize, functionStack.empty());
+                generator.declare_i32_array(newArrayDef.getLlvmId(), newArraySize, functionStack.empty());
                 break;
             case DOUBLE:
-                generator.declare_double_array(newArrayId, newArraySize, functionStack.empty());
+                generator.declare_double_array(newArrayDef.getLlvmId(), newArraySize, functionStack.empty());
                 break;
             default:
                 throw new UnsupportedOperationException("Array definition for type: " + newArrayType.type);
@@ -273,12 +277,32 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitExpression(NobleScriptParser.ExpressionContext ctx) {
         log("on exitExpression");
+        if (ctx.expression0() != null) {
+            if (ctx.expression0().operator0() != null) {
+                Value right = valueStack.pop();
+                Value left = valueStack.pop();
+
+                if (ctx.expression0().operator0().EQUAL_OP() != null) {
+                    generator.icmp(left.content, right.content, "eq");
+                } else if (ctx.expression0().operator0().NOT_EQUAL_OP() != null) {
+                    generator.icmp(left.content, right.content, "nq");
+                } else if (ctx.expression0().operator0().GREATER_THAN_OP() != null) {
+                    generator.icmp(left.content, right.content, "sgt");
+                } else if (ctx.expression0().operator0().LESSER_THAN_OP() != null) {
+                    generator.icmp(left.content, right.content, "slt");
+                } else if (ctx.expression0().operator0().GREATER_THAN_OR_EQUAL_OP() != null) {
+                    generator.icmp(left.content, right.content, "sge");
+                } else if (ctx.expression0().operator0().LESSER_THAN_OR_EQUAL_OP() != null) {
+                    generator.icmp(left.content, right.content, "sle");
+                }
+                valueStack.push(new Value("%" + (generator.getRegister() - 1), VALUE_BOOLEAN_REGISTER));
+            }
+        }
     }
 
     @Override
     public void enterExpression0(NobleScriptParser.Expression0Context ctx) {
         log("on enterExpression0");
-
     }
 
     @Override
@@ -447,11 +471,11 @@ public class LLVMActions implements NobleScriptListener {
             final Value value;
             switch (varDef.type) {
                 case INT:
-                    generator.load_i32(varDef.id, varDef.scope == null);
+                    generator.load_i32(varDef.getLlvmId(), varDef.scope == null);
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     break;
                 case DOUBLE:
-                    generator.load_double(varDef.id, varDef.scope == null);
+                    generator.load_double(varDef.getLlvmId(), varDef.scope == null);
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
                     break;
                 case STRING:
@@ -475,11 +499,11 @@ public class LLVMActions implements NobleScriptListener {
             final Value value;
             switch (arrayDef.type) {
                 case INT:
-                    generator.load_i32_array_index(arrayDef.id, arrayDef.size, indexValue, arrayDef.scope == null);
+                    generator.load_i32_array_index(arrayDef.getLlvmId(), arrayDef.size, indexValue, arrayDef.scope == null);
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     break;
                 case DOUBLE:
-                    generator.load_double_array_index(arrayDef.id, arrayDef.size, indexValue, arrayDef.scope == null);
+                    generator.load_double_array_index(arrayDef.getLlvmId(), arrayDef.size, indexValue, arrayDef.scope == null);
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
                     break;
                 default:
@@ -660,6 +684,8 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterLoop_statement(NobleScriptParser.Loop_statementContext ctx) {
         log("on enterLoop_statement");
+        blockStack.push(BlockType.WHILE_BLOCK);
+        generator.while_start();
     }
 
     @Override
@@ -670,11 +696,97 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterIf_statement(NobleScriptParser.If_statementContext ctx) {
         log("on enterIf_statement");
+        blockStack.push(BlockType.IF_BLOCK);
     }
 
     @Override
     public void exitIf_statement(NobleScriptParser.If_statementContext ctx) {
         log("on exitIf_statement");
+    }
+
+    @Override
+    public void enterElif_statement(NobleScriptParser.Elif_statementContext ctx) {
+        log("on enterElif_statement");
+    }
+
+    @Override
+    public void exitElif_statement(NobleScriptParser.Elif_statementContext ctx) {
+        log("on exitElif_statement");
+    }
+
+    @Override
+    public void enterElse_statement(NobleScriptParser.Else_statementContext ctx) {
+        log("on enterElse_statement");
+    }
+
+    @Override
+    public void exitElse_statement(NobleScriptParser.Else_statementContext ctx) {
+        log("on exitElse_statement");
+    }
+
+    @Override
+    public void enterBlock_open(NobleScriptParser.Block_openContext ctx) {
+        log("on enterBlock_open");
+        String newFunId;
+        String scopeId;
+        String newScopeId;
+        switch (blockStack.peek()) {
+            case IF_BLOCK:
+                generator.if_start();
+
+                newFunId = "_if" + (generator.getBr()-1);
+                scopeId = functionStack.empty() ? "" : functionStack.peek();
+                newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
+
+                functionDefs.put(newScopeId, new HashMap<>());
+                functionStack.push(newScopeId);
+
+                break;
+            case FUNCTION_BLOCK:
+                break;
+            case WHILE_BLOCK:
+                generator.whilebody_start();
+
+                newFunId = "_while" + (generator.getBr()-1);
+                scopeId = functionStack.empty() ? "" : functionStack.peek();
+                newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
+
+                functionDefs.put(newScopeId, new HashMap<>());
+                functionStack.push(newScopeId);
+
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public void exitBlock_open(NobleScriptParser.Block_openContext ctx) {
+        log("on exitBlock_open");
+    }
+
+    @Override
+    public void enterBlock_close(NobleScriptParser.Block_closeContext ctx) {
+        log("on enterBlock_close");
+    }
+
+    @Override
+    public void exitBlock_close(NobleScriptParser.Block_closeContext ctx) {
+        log("on exitBlock_close");
+        switch (blockStack.pop()) {
+            case IF_BLOCK:
+                generator.if_end();
+                functionStack.pop();
+                break;
+            case FUNCTION_BLOCK:
+                break;
+            case WHILE_BLOCK:
+                generator.whilebody_end();
+                functionStack.pop();
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override

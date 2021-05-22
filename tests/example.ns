@@ -1,38 +1,7 @@
-int globalnyInt = 100;
-
 int main(){
-    print("Operacja na zmiennych lokalnych i globalnych:");
-    int lokalnyInt = 1;
-    print(globalnyInt + lokalnyInt);
-    print(globalnyInt);
-    print(lokalnyInt);
-
-    print("");
-    print("double x:");
-    double x = 2.0 + 1;
-    print(x);
-
-    print("int y:");
-    int y = 1;
-    print(y);
-
-    print("");
-    print("Dodawanie double x + int y:");
-    print(x + y);
-
-    print("Kolejnosc wykonywania operacji arytmetycznych:");
-    print(2 + 2 * 2);
-
-    print("");
-    print("Arrays:");
-    int mojaTablica[10];
-    mojaTablica[0] = 69;
-    mojaTablica[9] = 31;
-    print(mojaTablica[0] + mojaTablica[9]);
-
-    print("");
-    print("Podaj int:");
-    int a = readInt();
-    print("Podaj double:");
-    print(a + readDouble());
+    int a = 5;
+    while(a < 20){
+        print(a);
+        a = a + 1;
+    }
 }

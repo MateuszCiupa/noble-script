@@ -30,8 +30,8 @@ public class NobleScriptCompiler {
             try (FileWriter fw = new FileWriter("./tests/example.ll")) {
                 fw.write(lvmCode);
             }
-        } catch (UnsupportedOperationException e) {
-            System.err.println("Script uses features that are not implemented yet.");
+//        } catch (UnsupportedOperationException e) {
+//            System.err.println("Script uses features that are not implemented yet.");
         } catch (NobleScriptException e) {
             System.err.println("Script is invalid: " + e.getMessage());
         } catch (IOException e) {
