@@ -7,14 +7,21 @@ declare i32 @scanf(i8*, ...)
 @strsd = constant [4 x i8] c"%lf\00"
 
 define i32 @main() nounwind {
-  %1 = icmp sge i32 2, 2
-  br i1 %1, label %true1, label %false1
-  true1:
-  %c = alloca i32
-  store i32 2, i32* %c
-  %2 = load i32, i32* %c
-  %3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %2)
-  br label %false1
-  false1:
+  %main.a = alloca i32
+  store i32 5, i32* %main.a
+  br label %whilestart0
+  whilestart0:
+  %1 = load i32, i32* %main.a
+  %2 = icmp slt i32 %1, 20
+  br i1 %2, label %whiletrue1, label %whilefalse1
+  whiletrue1:
+  %3 = load i32, i32* %main.a
+  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %3)
+  %5 = load i32, i32* %main.a
+  %6 = add i32 %5, 1
+  store i32 %6, i32* %main.a
+  br label %whilestart0
+  br label %whilefalse1
+  whilefalse1:
   ret i32 0
 }

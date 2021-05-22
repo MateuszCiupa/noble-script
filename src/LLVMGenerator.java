@@ -133,6 +133,32 @@ public class LLVMGenerator {
     }
 
     /**
+     * WHILE
+     */
+    public void while_start(){
+        br_stack.push(br);
+        buffer.append("br label %whilestart" + br + "\n");
+        buffer.append("whilestart" + br + ":\n");
+        br++;
+    }
+
+
+    public void whilebody_start() {
+        br_stack.push(br);
+        buffer.append("br i1 %" + (register - 1) + ", label %whiletrue" + br + ", label %whilefalse" + br + "\n");
+        buffer.append("whiletrue").append(br).append(":\n");
+    }
+
+    public void whilebody_end() {
+        int whilebody = br_stack.pop();
+        int whilestart_br = br_stack.pop();
+
+        buffer.append("br label %whilestart" + whilestart_br + "\n");
+        buffer.append("br label %whilefalse" + whilebody + "\n");
+        buffer.append("whilefalse" + whilebody + ":\n");
+    }
+
+    /**
      * String
      */
     public void assign_string(String id, String text, boolean global, String function) {
