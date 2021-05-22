@@ -684,6 +684,8 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterLoop_statement(NobleScriptParser.Loop_statementContext ctx) {
         log("on enterLoop_statement");
+        blockStack.push(BlockType.WHILE_BLOCK);
+        generator.while_start();
     }
 
     @Override
@@ -725,19 +727,33 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterBlock_open(NobleScriptParser.Block_openContext ctx) {
         log("on enterBlock_open");
+        String newFunId;
+        String scopeId;
+        String newScopeId;
         switch (blockStack.peek()) {
             case IF_BLOCK:
                 generator.if_start();
 
-                final String newFunId = "_if" + (generator.getBr()-1);
-                final String scopeId = functionStack.empty() ? "" : functionStack.peek();
-                final String newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
+                newFunId = "_if" + (generator.getBr()-1);
+                scopeId = functionStack.empty() ? "" : functionStack.peek();
+                newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
 
                 functionDefs.put(newScopeId, new HashMap<>());
                 functionStack.push(newScopeId);
 
                 break;
             case FUNCTION_BLOCK:
+                break;
+            case WHILE_BLOCK:
+                generator.whilebody_start();
+
+                newFunId = "_while" + (generator.getBr()-1);
+                scopeId = functionStack.empty() ? "" : functionStack.peek();
+                newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
+
+                functionDefs.put(newScopeId, new HashMap<>());
+                functionStack.push(newScopeId);
+
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -763,6 +779,10 @@ public class LLVMActions implements NobleScriptListener {
                 functionStack.pop();
                 break;
             case FUNCTION_BLOCK:
+                break;
+            case WHILE_BLOCK:
+                generator.whilebody_end();
+                functionStack.pop();
                 break;
             default:
                 throw new UnsupportedOperationException();
