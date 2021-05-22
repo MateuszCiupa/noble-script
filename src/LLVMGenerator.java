@@ -16,6 +16,8 @@ public class LLVMGenerator {
         return register;
     }
 
+    public int getBr(){ return br; }
+
     public String generate() {
         main.append(buffer);
 

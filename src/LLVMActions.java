@@ -84,9 +84,9 @@ public class LLVMActions implements NobleScriptListener {
                 if (ctx.INT_LITERAL() != null) {
                     int index = Integer.parseInt(ctx.INT_LITERAL().getText());
                     int size = ((ArrayDefinition) varDef).size;
-                    generator.assign_i32_array(varId, size, index, varDef.scope == null, value.content);
+                    generator.assign_i32_array(varDef.getLlvmId(), size, index, varDef.scope == null, value.content);
                 } else {
-                    generator.assign_i32(varId, value.content, varDef.scope == null);
+                    generator.assign_i32(varDef.getLlvmId(), value.content, varDef.scope == null);
                 }
                 break;
             case VALUE_DOUBLE:
@@ -99,9 +99,9 @@ public class LLVMActions implements NobleScriptListener {
                 if (ctx.INT_LITERAL() != null) {
                     int index = Integer.parseInt(ctx.INT_LITERAL().getText());
                     int size = ((ArrayDefinition) varDef).size;
-                    generator.assign_double_array(varId, size, index, varDef.scope == null, value.content);
+                    generator.assign_double_array(varDef.getLlvmId(), size, index, varDef.scope == null, value.content);
                 } else {
-                    generator.assign_double(varId, value.content, varDef.scope == null);
+                    generator.assign_double(varDef.getLlvmId(), value.content, varDef.scope == null);
                 }
                 break;
             default:
@@ -182,9 +182,9 @@ public class LLVMActions implements NobleScriptListener {
         final Definition newVarDef;
 
         if (newVarType == VarType.STRING) {
-            newVarDef = new StringDefinition(newVarId, newVarType, DefinitionType.VARIABLE, functionStack.isEmpty() ? null : functionStack.peek(), -1);
+            newVarDef = new StringDefinition(newVarId, newVarType, DefinitionType.VARIABLE, functionStack.isEmpty() ? "" : functionStack.peek(), -1);
         } else {
-            newVarDef = new Definition(newVarId, newVarType, DefinitionType.VARIABLE, functionStack.isEmpty() ? null : functionStack.peek());
+            newVarDef = new Definition(newVarId, newVarType, DefinitionType.VARIABLE, functionStack.isEmpty() ? "" : functionStack.peek());
         }
 
         // Check function scope
@@ -212,16 +212,16 @@ public class LLVMActions implements NobleScriptListener {
                 if (varDef.type != VarType.INT) {
                     throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
-                generator.declare_i32(varDef.id, varDef.scope == null);
-                generator.assign_i32(varDef.id, value.content, varDef.scope == null);
+                generator.declare_i32(varDef.getLlvmId(), varDef.scope == null);
+                generator.assign_i32(varDef.getLlvmId(), value.content, varDef.scope == null);
                 break;
             case VALUE_DOUBLE:
             case VALUE_DOUBLE_REGISTER:
                 if (varDef.type != VarType.DOUBLE) {
                     throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
-                generator.declare_double(varDef.id, varDef.scope == null);
-                generator.assign_double(varDef.id, value.content, varDef.scope == null);
+                generator.declare_double(varDef.getLlvmId(), varDef.scope == null);
+                generator.assign_double(varDef.getLlvmId(), value.content, varDef.scope == null);
                 break;
             case VALUE_STRING:
                 if (varDef.type != VarType.STRING) {
@@ -254,10 +254,10 @@ public class LLVMActions implements NobleScriptListener {
 
         switch (newArrayType) {
             case INT:
-                generator.declare_i32_array(newArrayId, newArraySize, functionStack.empty());
+                generator.declare_i32_array(newArrayDef.getLlvmId(), newArraySize, functionStack.empty());
                 break;
             case DOUBLE:
-                generator.declare_double_array(newArrayId, newArraySize, functionStack.empty());
+                generator.declare_double_array(newArrayDef.getLlvmId(), newArraySize, functionStack.empty());
                 break;
             default:
                 throw new UnsupportedOperationException("Array definition for type: " + newArrayType.type);
@@ -471,11 +471,11 @@ public class LLVMActions implements NobleScriptListener {
             final Value value;
             switch (varDef.type) {
                 case INT:
-                    generator.load_i32(varDef.id, varDef.scope == null);
+                    generator.load_i32(varDef.getLlvmId(), varDef.scope == null);
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     break;
                 case DOUBLE:
-                    generator.load_double(varDef.id, varDef.scope == null);
+                    generator.load_double(varDef.getLlvmId(), varDef.scope == null);
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
                     break;
                 case STRING:
@@ -499,11 +499,11 @@ public class LLVMActions implements NobleScriptListener {
             final Value value;
             switch (arrayDef.type) {
                 case INT:
-                    generator.load_i32_array_index(arrayDef.id, arrayDef.size, indexValue, arrayDef.scope == null);
+                    generator.load_i32_array_index(arrayDef.getLlvmId(), arrayDef.size, indexValue, arrayDef.scope == null);
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     break;
                 case DOUBLE:
-                    generator.load_double_array_index(arrayDef.id, arrayDef.size, indexValue, arrayDef.scope == null);
+                    generator.load_double_array_index(arrayDef.getLlvmId(), arrayDef.size, indexValue, arrayDef.scope == null);
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
                     break;
                 default:
@@ -728,6 +728,14 @@ public class LLVMActions implements NobleScriptListener {
         switch (blockStack.peek()) {
             case IF_BLOCK:
                 generator.if_start();
+
+                final String newFunId = "_if" + (generator.getBr()-1);
+                final String scopeId = functionStack.empty() ? "" : functionStack.peek();
+                final String newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
+
+                functionDefs.put(newScopeId, new HashMap<>());
+                functionStack.push(newScopeId);
+
                 break;
             case FUNCTION_BLOCK:
                 break;
@@ -752,6 +760,7 @@ public class LLVMActions implements NobleScriptListener {
         switch (blockStack.pop()) {
             case IF_BLOCK:
                 generator.if_end();
+                functionStack.pop();
                 break;
             case FUNCTION_BLOCK:
                 break;
