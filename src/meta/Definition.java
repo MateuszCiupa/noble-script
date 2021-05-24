@@ -16,7 +16,7 @@ public class Definition {
         this.scope = scope;
     }
 
-    public String getLlvmId(){
-        return (scope == null ? "" : scope + ".") + id;
+    public String getLlvmId() {
+        return ((scope == null || scope.isBlank() || scope.trim().isBlank()) ? "" : scope + ".") + id;
     }
 }

@@ -1,7 +1,16 @@
-int main(){
-    int a = 5;
-    while(a < 20){
+int a=1;
+
+int mojaFunkcja1(){
+    if (a<20){
         print(a);
         a = a + 1;
+        mojaFunkcja1();
     }
 }
+
+int mojaFunkcja2(){
+    int inthahah = 420;
+    print(inthahah + 1);
+}
+
+mojaFunkcja1();

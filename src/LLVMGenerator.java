@@ -4,7 +4,7 @@ public class LLVMGenerator {
 
     private final StringBuilder header = new StringBuilder();
     private final StringBuilder main = new StringBuilder();
-    private final StringBuilder buffer = new StringBuilder();
+    private StringBuilder buffer = new StringBuilder();
 
     private int register = 1;
     private int br = 0;
@@ -34,9 +34,9 @@ public class LLVMGenerator {
                 "@strsi = constant [3 x i8] c\"%d\\00\"\n" +
                 "@strsd = constant [4 x i8] c\"%lf\\00\"\n" +
                 "\n" +
-                header.toString() +
+                header +
                 "define i32 @main() nounwind {\n" +
-                sb.toString() +
+                sb +
                 "  ret i32 0\n" +
                 "}\n";
     }
@@ -110,6 +110,35 @@ public class LLVMGenerator {
                 .append(" = load double, double* %")
                 .append(register - 3)
                 .append("\n");
+    }
+
+    /**
+     * FUNCTIONS
+     */
+    public void function_start(String id) {
+        main.append(buffer);
+        buffer = new StringBuilder().append("define void @" + id + "() nounwind {\n");
+        register = 1;
+    }
+
+    public void function_end() {
+        buffer.append("ret void\n");
+
+        String[] lines = buffer.toString().split("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append(lines[0]).append("\n");
+        for (int i = 1; i < lines.length; i++) {
+            sb.append("  ").append(lines[i]).append("\n");
+        }
+        buffer = new StringBuilder(sb.toString());
+
+        buffer.append("}\n\n");
+        header.append(buffer);
+        buffer = new StringBuilder();
+    }
+
+    public void call(String id) {
+        buffer.append("call void @").append(id).append("()\n");
     }
 
     /**
@@ -436,4 +465,6 @@ public class LLVMGenerator {
                 .append(val2)
                 .append("\n");
     }
+
+
 }

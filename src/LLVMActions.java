@@ -84,9 +84,9 @@ public class LLVMActions implements NobleScriptListener {
                 if (ctx.INT_LITERAL() != null) {
                     int index = Integer.parseInt(ctx.INT_LITERAL().getText());
                     int size = ((ArrayDefinition) varDef).size;
-                    generator.assign_i32_array(varDef.getLlvmId(), size, index, varDef.scope == null, value.content);
+                    generator.assign_i32_array(varDef.getLlvmId(), size, index, isBlank(varDef.scope), value.content);
                 } else {
-                    generator.assign_i32(varDef.getLlvmId(), value.content, varDef.scope == null);
+                    generator.assign_i32(varDef.getLlvmId(), value.content, isBlank(varDef.scope));
                 }
                 break;
             case VALUE_DOUBLE:
@@ -99,9 +99,9 @@ public class LLVMActions implements NobleScriptListener {
                 if (ctx.INT_LITERAL() != null) {
                     int index = Integer.parseInt(ctx.INT_LITERAL().getText());
                     int size = ((ArrayDefinition) varDef).size;
-                    generator.assign_double_array(varDef.getLlvmId(), size, index, varDef.scope == null, value.content);
+                    generator.assign_double_array(varDef.getLlvmId(), size, index, isBlank(varDef.scope), value.content);
                 } else {
-                    generator.assign_double(varDef.getLlvmId(), value.content, varDef.scope == null);
+                    generator.assign_double(varDef.getLlvmId(), value.content, isBlank(varDef.scope));
                 }
                 break;
             default:
@@ -143,11 +143,16 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void enterFunction_definition(NobleScriptParser.Function_definitionContext ctx) {
         log("on enterFunction_definition");
+        if (!functionStack.isEmpty()) {
+            throw new IllegalFunctionDefinitionException("Function definition inside other function is illegal",
+                    ctx.getStart().getLine(), ctx.PAR_OPEN().getSymbol().getCharPositionInLine());
+        }
         blockStack.push(BlockType.FUNCTION_BLOCK);
 
         final VarType newFunType = VarType.getType(ctx.type(0).getText());
         final String newFunId = ctx.ID(0).getText();
         final Definition newFunDef = new Definition(newFunId, newFunType, DefinitionType.FUNCTION, functionStack.isEmpty() ? null : functionStack.peek());
+        generator.function_start(newFunDef.getLlvmId());
 
         final String scopeId = functionStack.empty() ? "" : functionStack.peek();
         final String newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
@@ -162,16 +167,13 @@ public class LLVMActions implements NobleScriptListener {
         functionDefs.get(scopeId).put(newFunId, newFunDef);
         functionDefs.put(newScopeId, new HashMap<>());
         functionStack.push(newScopeId);
-
-        // TODO add LLVMGenerator actions for function definition in enterFunction_definition
     }
 
     @Override
     public void exitFunction_definition(NobleScriptParser.Function_definitionContext ctx) {
         log("on exitFunction_definition");
         functionStack.pop();
-
-        // TODO add LLVMGenerator actions for function definition in exitFunction_definition
+        generator.function_end();
     }
 
     @Override
@@ -212,16 +214,16 @@ public class LLVMActions implements NobleScriptListener {
                 if (varDef.type != VarType.INT) {
                     throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
-                generator.declare_i32(varDef.getLlvmId(), varDef.scope == null);
-                generator.assign_i32(varDef.getLlvmId(), value.content, varDef.scope == null);
+                generator.declare_i32(varDef.getLlvmId(), isBlank(varDef.scope));
+                generator.assign_i32(varDef.getLlvmId(), value.content, isBlank(varDef.scope));
                 break;
             case VALUE_DOUBLE:
             case VALUE_DOUBLE_REGISTER:
                 if (varDef.type != VarType.DOUBLE) {
                     throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
-                generator.declare_double(varDef.getLlvmId(), varDef.scope == null);
-                generator.assign_double(varDef.getLlvmId(), value.content, varDef.scope == null);
+                generator.declare_double(varDef.getLlvmId(), isBlank(varDef.scope));
+                generator.assign_double(varDef.getLlvmId(), value.content, isBlank(varDef.scope));
                 break;
             case VALUE_STRING:
                 if (varDef.type != VarType.STRING) {
@@ -230,7 +232,7 @@ public class LLVMActions implements NobleScriptListener {
                 String content = ctx.expression().expression0().expression1().expression2().expression3().value().getText();
                 content = content.substring(1, content.length() - 1);
                 ((StringDefinition) varDef).length = content.length();
-                generator.assign_string(varDef.id, content, varDef.scope == null, functionStack.empty() ? "" : functionStack.peek());
+                generator.assign_string(varDef.id, content, isBlank(varDef.scope), functionStack.empty() ? "" : functionStack.peek());
                 break;
             default:
                 // TODO add more types in exitVariable_definition
@@ -471,15 +473,15 @@ public class LLVMActions implements NobleScriptListener {
             final Value value;
             switch (varDef.type) {
                 case INT:
-                    generator.load_i32(varDef.getLlvmId(), varDef.scope == null);
+                    generator.load_i32(varDef.getLlvmId(), isBlank(varDef.scope));
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     break;
                 case DOUBLE:
-                    generator.load_double(varDef.getLlvmId(), varDef.scope == null);
+                    generator.load_double(varDef.getLlvmId(), isBlank(varDef.scope));
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
                     break;
                 case STRING:
-                    String scopePrefix = varDef.scope == null ? "" : (varDef.scope + ".");
+                    String scopePrefix = isBlank(varDef.scope) ? "" : (varDef.scope + ".");
                     value = new StringValue(scopePrefix + varDef.id, VALUE_STRING_REGISTER, ((StringDefinition) varDef).length);
                     break;
                 default:
@@ -499,11 +501,11 @@ public class LLVMActions implements NobleScriptListener {
             final Value value;
             switch (arrayDef.type) {
                 case INT:
-                    generator.load_i32_array_index(arrayDef.getLlvmId(), arrayDef.size, indexValue, arrayDef.scope == null);
+                    generator.load_i32_array_index(arrayDef.getLlvmId(), arrayDef.size, indexValue, isBlank(arrayDef.scope));
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER);
                     break;
                 case DOUBLE:
-                    generator.load_double_array_index(arrayDef.getLlvmId(), arrayDef.size, indexValue, arrayDef.scope == null);
+                    generator.load_double_array_index(arrayDef.getLlvmId(), arrayDef.size, indexValue, isBlank(arrayDef.scope));
                     value = new Value("%" + (generator.getRegister() - 1), VALUE_DOUBLE_REGISTER);
                     break;
                 default:
@@ -531,6 +533,14 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitFunction_call_stm(NobleScriptParser.Function_call_stmContext ctx) {
         log("on exitFunction_call_stm");
+
+        if (ctx.ID() != null) {
+            if (!functionDefs.containsKey(ctx.ID().getText())) {
+                throw new IDNotDefinedException(ctx.ID().getText(),
+                        ctx.getStart().getLine(), ctx.PAR_OPEN().getSymbol().getCharPositionInLine());
+            }
+            generator.call(ctx.ID().getText());
+        }
     }
 
     @Override
@@ -734,7 +744,7 @@ public class LLVMActions implements NobleScriptListener {
             case IF_BLOCK:
                 generator.if_start();
 
-                newFunId = "_if" + (generator.getBr()-1);
+                newFunId = "_if" + (generator.getBr() - 1);
                 scopeId = functionStack.empty() ? "" : functionStack.peek();
                 newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
 
@@ -747,7 +757,7 @@ public class LLVMActions implements NobleScriptListener {
             case WHILE_BLOCK:
                 generator.whilebody_start();
 
-                newFunId = "_while" + (generator.getBr()-1);
+                newFunId = "_while" + (generator.getBr() - 1);
                 scopeId = functionStack.empty() ? "" : functionStack.peek();
                 newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
 
@@ -854,6 +864,10 @@ public class LLVMActions implements NobleScriptListener {
         } else {
             throw new IllegalStateException("ID {" + id + "} is not accessible in current scope {" + scopeId + "}");
         }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isEmpty() || value.trim().isEmpty();
     }
 
     private void log(String msg) {

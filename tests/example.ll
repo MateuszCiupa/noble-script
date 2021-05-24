@@ -6,22 +6,34 @@ declare i32 @scanf(i8*, ...)
 @strsi = constant [3 x i8] c"%d\00"
 @strsd = constant [4 x i8] c"%lf\00"
 
-define i32 @main() nounwind {
-  %main.a = alloca i32
-  store i32 5, i32* %main.a
-  br label %whilestart0
-  whilestart0:
-  %1 = load i32, i32* %main.a
+@a = global i32 0
+define void @mojaFunkcja1() nounwind {
+  %1 = load i32, i32* @a
   %2 = icmp slt i32 %1, 20
-  br i1 %2, label %whiletrue1, label %whilefalse1
-  whiletrue1:
-  %3 = load i32, i32* %main.a
+  br i1 %2, label %true1, label %false1
+  true1:
+  %3 = load i32, i32* @a
   %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %3)
-  %5 = load i32, i32* %main.a
+  %5 = load i32, i32* @a
   %6 = add i32 %5, 1
-  store i32 %6, i32* %main.a
-  br label %whilestart0
-  br label %whilefalse1
-  whilefalse1:
+  store i32 %6, i32* @a
+  call void @mojaFunkcja1()
+  br label %false1
+  false1:
+  ret void
+}
+
+define void @mojaFunkcja2() nounwind {
+  %mojaFunkcja2.inthahah = alloca i32
+  store i32 420, i32* %mojaFunkcja2.inthahah
+  %1 = load i32, i32* %mojaFunkcja2.inthahah
+  %2 = add i32 %1, 1
+  %3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %2)
+  ret void
+}
+
+define i32 @main() nounwind {
+store i32 1, i32* @a
+call void @mojaFunkcja1()
   ret i32 0
 }
