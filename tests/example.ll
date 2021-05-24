@@ -6,34 +6,28 @@ declare i32 @scanf(i8*, ...)
 @strsi = constant [3 x i8] c"%d\00"
 @strsd = constant [4 x i8] c"%lf\00"
 
+@str1 = constant[4 x i8] c"a:\0A\00"
+@str2 = constant[4 x i8] c"b:\0A\00"
+define void @mojaFunkcja1(i32 %0, i32 %1) nounwind {
+  %3 = alloca i32
+  store i32 %0, i32* %3
+  %4 = alloca i32
+  store i32 %1, i32* %4
+  %5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( [4 x i8], [4 x i8]* @str1, i32 0, i32 0))
+  %6 = load i32, i32* %3
+  %7 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %6)
+  %8 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( [4 x i8], [4 x i8]* @str2, i32 0, i32 0))
+  %9 = load i32, i32* %4
+  %10 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %9)
+  ret void
+}
+
 @a = global i32 0
-define void @mojaFunkcja1() nounwind {
-  %1 = load i32, i32* @a
-  %2 = icmp slt i32 %1, 20
-  br i1 %2, label %true1, label %false1
-  true1:
-  %3 = load i32, i32* @a
-  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %3)
-  %5 = load i32, i32* @a
-  %6 = add i32 %5, 1
-  store i32 %6, i32* @a
-  call void @mojaFunkcja1()
-  br label %false1
-  false1:
-  ret void
-}
-
-define void @mojaFunkcja2() nounwind {
-  %mojaFunkcja2.inthahah = alloca i32
-  store i32 420, i32* %mojaFunkcja2.inthahah
-  %1 = load i32, i32* %mojaFunkcja2.inthahah
-  %2 = add i32 %1, 1
-  %3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %2)
-  ret void
-}
-
+@b = global i32 0
 define i32 @main() nounwind {
-store i32 1, i32* @a
-call void @mojaFunkcja1()
+  store i32 69, i32* @a
+  store i32 12, i32* @b
+  %1 = load i32, i32* @a
+  call void @mojaFunkcja1(i32 %1)
   ret i32 0
 }

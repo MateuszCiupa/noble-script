@@ -97,6 +97,16 @@ public interface NobleScriptListener extends ParseTreeListener {
 	 */
 	void exitArray_definition(NobleScriptParser.Array_definitionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NobleScriptParser#function_param}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction_param(NobleScriptParser.Function_paramContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NobleScriptParser#function_param}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction_param(NobleScriptParser.Function_paramContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NobleScriptParser#expression}.
 	 * @param ctx the parse tree
 	 */

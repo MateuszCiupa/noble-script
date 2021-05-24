@@ -1,4 +1,9 @@
+import meta.Definition;
+import meta.Value;
+
+import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class LLVMGenerator {
 
@@ -16,7 +21,9 @@ public class LLVMGenerator {
         return register;
     }
 
-    public int getBr(){ return br; }
+    public int getBr() {
+        return br;
+    }
 
     public String generate() {
         main.append(buffer);
@@ -115,10 +122,27 @@ public class LLVMGenerator {
     /**
      * FUNCTIONS
      */
-    public void function_start(String id) {
+    public void function_start(String id, List<Definition> args) {
+        register = 0;
         main.append(buffer);
-        buffer = new StringBuilder().append("define void @" + id + "() nounwind {\n");
-        register = 1;
+
+        buffer = new StringBuilder().append("define void @" + id + "(");
+        buffer.append(args.stream().map(this::argumentToLLVMCode).collect(Collectors.joining(", ")));
+        register++;
+        buffer.append(") nounwind {\n");
+        for (int i = 0; i < args.toArray().length; i++) {
+            buffer.append("%" + register++ + " = alloca i32\n");
+            buffer.append("store i32 %" + i + ", i32* %" + (register - 1) + "\n");
+        }
+    }
+
+    private String argumentToLLVMCode(Definition arg) {
+        switch (arg.type) {
+            case INT:
+                return "i32 %" + register++;
+            default:
+                throw new UnsupportedOperationException("Unsupported function argument");
+        }
     }
 
     public void function_end() {
@@ -135,10 +159,13 @@ public class LLVMGenerator {
         buffer.append("}\n\n");
         header.append(buffer);
         buffer = new StringBuilder();
+        register = 1;
     }
 
-    public void call(String id) {
-        buffer.append("call void @").append(id).append("()\n");
+    public void call(String id, List<Value> params) {
+        buffer.append("call void @").append(id).append("(");
+        buffer.append(params.stream().map(Value::valueToLlvm).collect(Collectors.joining(", ")));
+        buffer.append(")\n");
     }
 
     /**
@@ -164,7 +191,7 @@ public class LLVMGenerator {
     /**
      * WHILE
      */
-    public void while_start(){
+    public void while_start() {
         br_stack.push(br);
         buffer.append("br label %whilestart" + br + "\n");
         buffer.append("whilestart" + br + ":\n");

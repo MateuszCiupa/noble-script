@@ -1,16 +1,12 @@
-int a=1;
+int mojaFunkcja1(int a, int b){
+    print("a:");
+    print(a);
+    print("b:");
+    print(b);
 
-int mojaFunkcja1(){
-    if (a<20){
-        print(a);
-        a = a + 1;
-        mojaFunkcja1();
-    }
 }
 
-int mojaFunkcja2(){
-    int inthahah = 420;
-    print(inthahah + 1);
-}
+int a = 69;
+int b = 12;
+mojaFunkcja1(a);
 
-mojaFunkcja1();

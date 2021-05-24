@@ -9,6 +9,7 @@ import types.ValueType;
 import types.VarType;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static types.ValueType.*;
 
@@ -149,10 +150,9 @@ public class LLVMActions implements NobleScriptListener {
         }
         blockStack.push(BlockType.FUNCTION_BLOCK);
 
-        final VarType newFunType = VarType.getType(ctx.type(0).getText());
-        final String newFunId = ctx.ID(0).getText();
+        final VarType newFunType = VarType.getType(ctx.type().getText());
+        final String newFunId = ctx.ID().getText();
         final Definition newFunDef = new Definition(newFunId, newFunType, DefinitionType.FUNCTION, functionStack.isEmpty() ? null : functionStack.peek());
-        generator.function_start(newFunDef.getLlvmId());
 
         final String scopeId = functionStack.empty() ? "" : functionStack.peek();
         final String newScopeId = (scopeId.equals("") ? "" : scopeId + ".") + newFunId;
@@ -167,6 +167,21 @@ public class LLVMActions implements NobleScriptListener {
         functionDefs.get(scopeId).put(newFunId, newFunDef);
         functionDefs.put(newScopeId, new HashMap<>());
         functionStack.push(newScopeId);
+
+        int index = ctx.function_param().toArray().length + 1;
+        List<Definition> params = new ArrayList<>();
+        for (NobleScriptParser.Function_paramContext param : ctx.function_param()) {
+            params.add(paramContextToDef(param, index));
+            index++;
+        }
+        params.forEach(param -> functionDefs.get(newScopeId).put(param.id, param));
+        generator.function_start(newFunDef.getLlvmId(), params);
+    }
+
+    private Definition paramContextToDef(NobleScriptParser.Function_paramContext context, int index) {
+        return new ParamDefinition(context.ID().getText(),
+                VarType.getType(context.type().getText()),
+                DefinitionType.VARIABLE, functionStack.isEmpty() ? "" : functionStack.peek(), index);
     }
 
     @Override
@@ -269,6 +284,16 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitArray_definition(NobleScriptParser.Array_definitionContext ctx) {
         log("on exitArray_definition");
+    }
+
+    @Override
+    public void enterFunction_param(NobleScriptParser.Function_paramContext ctx) {
+        log("on enterFunction_param");
+    }
+
+    @Override
+    public void exitFunction_param(NobleScriptParser.Function_paramContext ctx) {
+        log("on exitFunction_param");
     }
 
     @Override
@@ -534,12 +559,19 @@ public class LLVMActions implements NobleScriptListener {
     public void exitFunction_call_stm(NobleScriptParser.Function_call_stmContext ctx) {
         log("on exitFunction_call_stm");
 
+        int argc = ctx.expression().toArray().length;
+        List<Value> params = new ArrayList<>();
+        while (argc-- > 0) {
+            params.add(valueStack.pop());
+        }
+        Collections.reverse(params);
+
         if (ctx.ID() != null) {
             if (!functionDefs.containsKey(ctx.ID().getText())) {
                 throw new IDNotDefinedException(ctx.ID().getText(),
                         ctx.getStart().getLine(), ctx.PAR_OPEN().getSymbol().getCharPositionInLine());
             }
-            generator.call(ctx.ID().getText());
+            generator.call(ctx.ID().getText(), params);
         }
     }
 

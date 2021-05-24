@@ -20,9 +20,10 @@ definition: variable_definition SEMICOL
           ;
 
 structure_definition: 'struct' ID block_open (variable_definition SEMICOL)+ block_close;
-function_definition: type ID PAR_OPEN (type ID)?(',' type ID)* PAR_CLOSE block_open statement* block_close;
+function_definition: type ID PAR_OPEN function_param?(',' function_param)* PAR_CLOSE block_open statement* block_close;
 variable_definition: type ID ASSIGN_OP expression;
 array_definition: type ID BRACKET_OPEN INT_LITERAL BRACKET_CLOSE;
+function_param: type ID;
 
 expression : expression0;
 
