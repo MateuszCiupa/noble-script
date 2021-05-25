@@ -126,7 +126,7 @@ public class LLVMGenerator {
         register = 0;
         main.append(buffer);
 
-        buffer = new StringBuilder().append("define void @" + id + "(");
+        buffer = new StringBuilder().append("define dso_local i32 @" + id + "(");
         buffer.append(args.stream().map(this::argumentToLLVMCode).collect(Collectors.joining(", ")));
         register++;
         buffer.append(") nounwind {\n");
@@ -145,8 +145,12 @@ public class LLVMGenerator {
         }
     }
 
+    public void function_return_stm(Value value) {
+        buffer.append("ret i32 " + value.content + "\n");
+    }
+
     public void function_end() {
-        buffer.append("ret void\n");
+        buffer.append("ret i32 0\n");
 
         String[] lines = buffer.toString().split("\n");
         StringBuilder sb = new StringBuilder();
@@ -163,7 +167,7 @@ public class LLVMGenerator {
     }
 
     public void call(String id, List<Value> params) {
-        buffer.append("call void @").append(id).append("(");
+        buffer.append("%" + register++ + " = call i32 @").append(id).append("(");
         buffer.append(params.stream().map(Value::valueToLlvm).collect(Collectors.joining(", ")));
         buffer.append(")\n");
     }

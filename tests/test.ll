@@ -6,9 +6,9 @@ target triple = "x86_64-pc-linux-gnu"
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @some_function(i32 %0, i32 %1, i32 %2) #0 {
   %4 = alloca i32, align 4
-  store i32 %0, i32* %4, align 4
   %5 = alloca i32, align 4
   %6 = alloca i32, align 4
+  store i32 %0, i32* %4, align 4
   store i32 %1, i32* %5, align 4
   store i32 %2, i32* %6, align 4
   %7 = load i32, i32* %4, align 4
@@ -22,7 +22,7 @@ define dso_local i32 @some_function(i32 %0, i32 %1, i32 %2) #0 {
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @main() #0 {
-  %1 = call i32 @some_function(i32* %1, i32 13, i32 14)
+  %1 = call i32 @some_function(i32 420, i32 13, i32 14)
   ret i32 0
 }
 

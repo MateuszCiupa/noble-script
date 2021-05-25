@@ -1,12 +1,13 @@
-int mojaFunkcja1(int a, int b){
-    print("a:");
-    print(a);
-    print("b:");
-    print(b);
+int a(int g) {
+    int c = 5 + 10 + g;
 
+    if (0 > 1) {
+        return 2.0;
+    }
 }
 
-int a = 69;
-int b = 12;
-mojaFunkcja1(a);
-
+int b = a(10 + 2);
+print(b);
+double dd = 2.0 + 1
+var a = 2;
+var b = 3.0;

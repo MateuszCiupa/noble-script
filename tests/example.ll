@@ -6,28 +6,30 @@ declare i32 @scanf(i8*, ...)
 @strsi = constant [3 x i8] c"%d\00"
 @strsd = constant [4 x i8] c"%lf\00"
 
-@str1 = constant[4 x i8] c"a:\0A\00"
-@str2 = constant[4 x i8] c"b:\0A\00"
-define void @mojaFunkcja1(i32 %0, i32 %1) nounwind {
-  %3 = alloca i32
-  store i32 %0, i32* %3
-  %4 = alloca i32
-  store i32 %1, i32* %4
-  %5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( [4 x i8], [4 x i8]* @str1, i32 0, i32 0))
-  %6 = load i32, i32* %3
-  %7 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %6)
-  %8 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( [4 x i8], [4 x i8]* @str2, i32 0, i32 0))
-  %9 = load i32, i32* %4
-  %10 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %9)
-  ret void
+define dso_local i32 @a(i32 %0) nounwind {
+  %2 = alloca i32
+  store i32 %0, i32* %2
+  %3 = add i32 5, 10
+  %4 = load i32, i32* %2
+  %5 = add i32 %3, %4
+  %a.c = alloca i32
+  store i32 %5, i32* %a.c
+  %6 = icmp sgt i32 0, 1
+  br i1 %6, label %true1, label %false1
+  true1:
+  %7 = load i32, i32* %a.c
+  ret i32 %7
+  br label %false1
+  false1:
+  ret i32 0
 }
 
-@a = global i32 0
 @b = global i32 0
 define i32 @main() nounwind {
-  store i32 69, i32* @a
-  store i32 12, i32* @b
-  %1 = load i32, i32* @a
-  call void @mojaFunkcja1(i32 %1)
+  %1 = add i32 10, 2
+  %2 = call i32 @a(i32 %1)
+  store i32 %2, i32* @b
+  %3 = load i32, i32* @b
+  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %3)
   ret i32 0
 }

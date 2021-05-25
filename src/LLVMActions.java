@@ -119,6 +119,17 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitReturn_statement(NobleScriptParser.Return_statementContext ctx) {
         log("on exitReturn_statement");
+        if (functionStack.isEmpty()) {
+            throw new NobleScriptException("Return statement outside of function definition",
+                    ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        }
+
+        Value value = valueStack.pop();
+
+        if (value.type.notEquals(VALUE_INT)) {
+            throw new NobleScriptException("Return statement for values other than int are not supported", ctx.getStart().getLine(), ctx.RETURN().getSymbol().getCharPositionInLine());
+        }
+        generator.function_return_stm(value);
     }
 
     @Override
@@ -187,8 +198,9 @@ public class LLVMActions implements NobleScriptListener {
     @Override
     public void exitFunction_definition(NobleScriptParser.Function_definitionContext ctx) {
         log("on exitFunction_definition");
-        functionStack.pop();
+
         generator.function_end();
+        functionStack.pop();
     }
 
     @Override
@@ -565,6 +577,10 @@ public class LLVMActions implements NobleScriptListener {
             params.add(valueStack.pop());
         }
         Collections.reverse(params);
+        if (params.stream().anyMatch(param -> param.type.notEquals(VALUE_INT))) {
+            throw new NobleScriptException("Values of type other than int are not supported in function calls",
+                    ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+        }
 
         if (ctx.ID() != null) {
             if (!functionDefs.containsKey(ctx.ID().getText())) {
@@ -572,6 +588,7 @@ public class LLVMActions implements NobleScriptListener {
                         ctx.getStart().getLine(), ctx.PAR_OPEN().getSymbol().getCharPositionInLine());
             }
             generator.call(ctx.ID().getText(), params);
+            valueStack.push(new Value("%" + (generator.getRegister() - 1), VALUE_INT_REGISTER));
         }
     }
 
