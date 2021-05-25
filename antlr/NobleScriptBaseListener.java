@@ -123,6 +123,18 @@ public class NobleScriptBaseListener implements NobleScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterFunction_param(NobleScriptParser.Function_paramContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunction_param(NobleScriptParser.Function_paramContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterExpression(NobleScriptParser.ExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}

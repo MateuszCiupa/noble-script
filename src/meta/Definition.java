@@ -5,7 +5,7 @@ import types.VarType;
 
 public class Definition {
     final public String id;
-    final public VarType type;
+    public VarType type;
     final public DefinitionType defType;
     final public String scope;
 
@@ -16,7 +16,7 @@ public class Definition {
         this.scope = scope;
     }
 
-    public String getLlvmId(){
-        return (scope == null ? "" : scope + ".") + id;
+    public String getLlvmId() {
+        return ((scope == null || scope.isBlank() || scope.trim().isBlank()) ? "" : scope + ".") + id;
     }
 }

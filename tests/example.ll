@@ -6,22 +6,15 @@ declare i32 @scanf(i8*, ...)
 @strsi = constant [3 x i8] c"%d\00"
 @strsd = constant [4 x i8] c"%lf\00"
 
+@a = global i32 0
+@b = global double 0.0
 define i32 @main() nounwind {
-  %main.a = alloca i32
-  store i32 5, i32* %main.a
-  br label %whilestart0
-  whilestart0:
-  %1 = load i32, i32* %main.a
-  %2 = icmp slt i32 %1, 20
-  br i1 %2, label %whiletrue1, label %whilefalse1
-  whiletrue1:
-  %3 = load i32, i32* %main.a
-  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %3)
-  %5 = load i32, i32* %main.a
-  %6 = add i32 %5, 1
-  store i32 %6, i32* %main.a
-  br label %whilestart0
-  br label %whilefalse1
-  whilefalse1:
+  store i32 2, i32* @a
+  store double 3.0, double* @b
+  %1 = load i32, i32* @a
+  %2 = load double, double* @b
+  %3 = sitofp i32 %1 to double
+  %4 = fadd double %3, %2
+  %5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %4)
   ret i32 0
 }

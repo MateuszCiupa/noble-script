@@ -64,6 +64,12 @@ public interface NobleScriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArray_definition(NobleScriptParser.Array_definitionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link NobleScriptParser#function_param}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction_param(NobleScriptParser.Function_paramContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link NobleScriptParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

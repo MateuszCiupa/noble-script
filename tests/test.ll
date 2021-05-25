@@ -4,13 +4,25 @@ target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16
 target triple = "x86_64-pc-linux-gnu"
 
 ; Function Attrs: noinline nounwind optnone uwtable
+define dso_local i32 @some_function(i32 %0, i32 %1, i32 %2) #0 {
+  %4 = alloca i32, align 4
+  %5 = alloca i32, align 4
+  %6 = alloca i32, align 4
+  store i32 %0, i32* %4, align 4
+  store i32 %1, i32* %5, align 4
+  store i32 %2, i32* %6, align 4
+  %7 = load i32, i32* %4, align 4
+  %8 = add nsw i32 %7, 69
+  %9 = load i32, i32* %5, align 4
+  %10 = add nsw i32 %8, %9
+  %11 = load i32, i32* %6, align 4
+  %12 = add nsw i32 %10, %11
+  ret i32 %12
+}
+
+; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @main() #0 {
-  %1 = alloca i32, align 4
-  %2 = alloca double, align 8
-  store i32 2, i32* %1, align 4
-  %3 = load i32, i32* %1, align 4
-  %4 = sitofp i32 %3 to double
-  store double %4, double* %2, align 8
+  %1 = call i32 @some_function(i32 420, i32 13, i32 14)
   ret i32 0
 }
 

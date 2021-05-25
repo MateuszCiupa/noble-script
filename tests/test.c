@@ -1,5 +1,9 @@
-int a = 2;
-a=5;
+
+int some_function(int a, int b, int c){
+    return a + 69 + b + c;
+    return 0;
+}
+
 int main (){
-    print(a);
+    int b = some_function(420, 13, 14);
 }
