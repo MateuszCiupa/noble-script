@@ -20,10 +20,10 @@ public class NobleScriptParser extends Parser {
 		IF=8, ELIF=9, ELSE=10, PAR_OPEN=11, PAR_CLOSE=12, BRACES_OPEN=13, BRACES_CLOSE=14, 
 		BRACKET_OPEN=15, BRACKET_CLOSE=16, NULL=17, INT_LITERAL=18, DOUBLE_LITERAL=19, 
 		BOOLEAN_LITERAL=20, STRING_LITERAL=21, BOOLEAN_TYPE=22, INT_TYPE=23, DOUBLE_TYPE=24, 
-		STRING_TYPE=25, ID=26, SEMICOL=27, ASSIGN_OP=28, LESSER_THAN_OP=29, LESSER_THAN_OR_EQUAL_OP=30, 
-		GREATER_THAN_OP=31, GREATER_THAN_OR_EQUAL_OP=32, EQUAL_OP=33, NOT_EQUAL_OP=34, 
-		PLUS_OP=35, MINUS_OP=36, POW_OP=37, DIV_OP=38, MUL_OP=39, WHITESPACE=40, 
-		NEWLINE=41;
+		STRING_TYPE=25, VAR_TYPE=26, ID=27, SEMICOL=28, ASSIGN_OP=29, LESSER_THAN_OP=30, 
+		LESSER_THAN_OR_EQUAL_OP=31, GREATER_THAN_OP=32, GREATER_THAN_OR_EQUAL_OP=33, 
+		EQUAL_OP=34, NOT_EQUAL_OP=35, PLUS_OP=36, MINUS_OP=37, POW_OP=38, DIV_OP=39, 
+		MUL_OP=40, WHITESPACE=41, NEWLINE=42;
 	public static final int
 		RULE_program = 0, RULE_statement = 1, RULE_assign_statement = 2, RULE_return_statement = 3, 
 		RULE_definition = 4, RULE_structure_definition = 5, RULE_function_definition = 6, 
@@ -54,8 +54,8 @@ public class NobleScriptParser extends Parser {
 			null, "'struct'", "','", "'print('", "'readDouble()'", "'readInt()'", 
 			"'return'", "'while'", "'if'", "'elif'", "'else'", "'('", "')'", "'{'", 
 			"'}'", "'['", "']'", "'null'", null, null, null, null, "'boolean'", "'int'", 
-			"'double'", "'string'", null, "';'", "'='", "'<'", "'<='", "'>'", "'>='", 
-			"'=='", "'!='", "'+'", "'-'", "'^'", "'/'", "'*'"
+			"'double'", "'string'", "'var'", null, "';'", "'='", "'<'", "'<='", "'>'", 
+			"'>='", "'=='", "'!='", "'+'", "'-'", "'^'", "'/'", "'*'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -65,9 +65,10 @@ public class NobleScriptParser extends Parser {
 			"IF", "ELIF", "ELSE", "PAR_OPEN", "PAR_CLOSE", "BRACES_OPEN", "BRACES_CLOSE", 
 			"BRACKET_OPEN", "BRACKET_CLOSE", "NULL", "INT_LITERAL", "DOUBLE_LITERAL", 
 			"BOOLEAN_LITERAL", "STRING_LITERAL", "BOOLEAN_TYPE", "INT_TYPE", "DOUBLE_TYPE", 
-			"STRING_TYPE", "ID", "SEMICOL", "ASSIGN_OP", "LESSER_THAN_OP", "LESSER_THAN_OR_EQUAL_OP", 
-			"GREATER_THAN_OP", "GREATER_THAN_OR_EQUAL_OP", "EQUAL_OP", "NOT_EQUAL_OP", 
-			"PLUS_OP", "MINUS_OP", "POW_OP", "DIV_OP", "MUL_OP", "WHITESPACE", "NEWLINE"
+			"STRING_TYPE", "VAR_TYPE", "ID", "SEMICOL", "ASSIGN_OP", "LESSER_THAN_OP", 
+			"LESSER_THAN_OR_EQUAL_OP", "GREATER_THAN_OP", "GREATER_THAN_OR_EQUAL_OP", 
+			"EQUAL_OP", "NOT_EQUAL_OP", "PLUS_OP", "MINUS_OP", "POW_OP", "DIV_OP", 
+			"MUL_OP", "WHITESPACE", "NEWLINE"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -158,7 +159,7 @@ public class NobleScriptParser extends Parser {
 			setState(71);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << ID))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << VAR_TYPE) | (1L << ID))) != 0)) {
 				{
 				{
 				setState(68);
@@ -554,7 +555,7 @@ public class NobleScriptParser extends Parser {
 				setState(121); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << VAR_TYPE))) != 0) );
 			setState(123);
 			block_close();
 			}
@@ -630,7 +631,7 @@ public class NobleScriptParser extends Parser {
 			setState(129);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << VAR_TYPE))) != 0)) {
 				{
 				setState(128);
 				function_param();
@@ -660,7 +661,7 @@ public class NobleScriptParser extends Parser {
 			setState(143);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << ID))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << VAR_TYPE) | (1L << ID))) != 0)) {
 				{
 				{
 				setState(140);
@@ -1772,6 +1773,7 @@ public class NobleScriptParser extends Parser {
 		public TerminalNode DOUBLE_TYPE() { return getToken(NobleScriptParser.DOUBLE_TYPE, 0); }
 		public TerminalNode STRING_TYPE() { return getToken(NobleScriptParser.STRING_TYPE, 0); }
 		public TerminalNode NULL() { return getToken(NobleScriptParser.NULL, 0); }
+		public TerminalNode VAR_TYPE() { return getToken(NobleScriptParser.VAR_TYPE, 0); }
 		public Primitive_typeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1800,7 +1802,7 @@ public class NobleScriptParser extends Parser {
 			{
 			setState(250);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << VAR_TYPE))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -2101,7 +2103,7 @@ public class NobleScriptParser extends Parser {
 			setState(270);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << ID))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << VAR_TYPE) | (1L << ID))) != 0)) {
 				{
 				{
 				setState(267);
@@ -2194,7 +2196,7 @@ public class NobleScriptParser extends Parser {
 			setState(283);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << ID))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << VAR_TYPE) | (1L << ID))) != 0)) {
 				{
 				{
 				setState(280);
@@ -2302,7 +2304,7 @@ public class NobleScriptParser extends Parser {
 			setState(304);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << ID))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << VAR_TYPE) | (1L << ID))) != 0)) {
 				{
 				{
 				setState(301);
@@ -2375,7 +2377,7 @@ public class NobleScriptParser extends Parser {
 			setState(314);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << ID))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << READ_DOUBLE) | (1L << READ_INT) | (1L << RETURN) | (1L << WHILE) | (1L << IF) | (1L << NULL) | (1L << BOOLEAN_TYPE) | (1L << INT_TYPE) | (1L << DOUBLE_TYPE) | (1L << STRING_TYPE) | (1L << VAR_TYPE) | (1L << ID))) != 0)) {
 				{
 				{
 				setState(311);
@@ -2571,7 +2573,7 @@ public class NobleScriptParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3+\u0148\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3,\u0148\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -2597,7 +2599,7 @@ public class NobleScriptParser extends Parser {
 		"\3\37\7\37\u0131\n\37\f\37\16\37\u0134\13\37\3\37\3\37\3 \3 \3 \7 \u013b"+
 		"\n \f \16 \u013e\13 \3 \3 \3!\3!\3\"\3\"\3#\3#\3#\2\5\30\32\34$\2\4\6"+
 		"\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@BD\2\7\4\2"+
-		"\23\23\30\33\3\2()\3\2%&\3\2\37$\3\2\6\7\2\u0148\2I\3\2\2\2\4Y\3\2\2\2"+
+		"\23\23\30\34\3\2)*\3\2&\'\3\2 %\3\2\6\7\2\u0148\2I\3\2\2\2\4Y\3\2\2\2"+
 		"\6d\3\2\2\2\bf\3\2\2\2\nq\3\2\2\2\fs\3\2\2\2\16\177\3\2\2\2\20\u0096\3"+
 		"\2\2\2\22\u009b\3\2\2\2\24\u00a1\3\2\2\2\26\u00a4\3\2\2\2\30\u00a6\3\2"+
 		"\2\2\32\u00b2\3\2\2\2\34\u00be\3\2\2\2\36\u00cf\3\2\2\2 \u00d5\3\2\2\2"+
@@ -2606,26 +2608,26 @@ public class NobleScriptParser extends Parser {
 		"\64\u0102\3\2\2\2\66\u0106\3\2\2\28\u0108\3\2\2\2:\u0115\3\2\2\2<\u012a"+
 		"\3\2\2\2>\u0137\3\2\2\2@\u0141\3\2\2\2B\u0143\3\2\2\2D\u0145\3\2\2\2F"+
 		"H\5\4\3\2GF\3\2\2\2HK\3\2\2\2IG\3\2\2\2IJ\3\2\2\2JL\3\2\2\2KI\3\2\2\2"+
-		"LM\7\2\2\3M\3\3\2\2\2NZ\5\66\34\2OZ\5\n\6\2PQ\5$\23\2QR\7\35\2\2RZ\3\2"+
-		"\2\2ST\5\6\4\2TU\7\35\2\2UZ\3\2\2\2VW\5\b\5\2WX\7\35\2\2XZ\3\2\2\2YN\3"+
-		"\2\2\2YO\3\2\2\2YP\3\2\2\2YS\3\2\2\2YV\3\2\2\2Z\5\3\2\2\2[\\\7\34\2\2"+
-		"\\]\7\36\2\2]e\5\26\f\2^_\7\34\2\2_`\7\21\2\2`a\7\24\2\2ab\7\22\2\2bc"+
-		"\7\36\2\2ce\5\26\f\2d[\3\2\2\2d^\3\2\2\2e\7\3\2\2\2fg\7\b\2\2gh\5\26\f"+
-		"\2h\t\3\2\2\2ij\5\20\t\2jk\7\35\2\2kr\3\2\2\2lr\5\f\7\2mr\5\16\b\2no\5"+
-		"\22\n\2op\7\35\2\2pr\3\2\2\2qi\3\2\2\2ql\3\2\2\2qm\3\2\2\2qn\3\2\2\2r"+
-		"\13\3\2\2\2st\7\3\2\2tu\7\34\2\2uy\5@!\2vw\5\20\t\2wx\7\35\2\2xz\3\2\2"+
+		"LM\7\2\2\3M\3\3\2\2\2NZ\5\66\34\2OZ\5\n\6\2PQ\5$\23\2QR\7\36\2\2RZ\3\2"+
+		"\2\2ST\5\6\4\2TU\7\36\2\2UZ\3\2\2\2VW\5\b\5\2WX\7\36\2\2XZ\3\2\2\2YN\3"+
+		"\2\2\2YO\3\2\2\2YP\3\2\2\2YS\3\2\2\2YV\3\2\2\2Z\5\3\2\2\2[\\\7\35\2\2"+
+		"\\]\7\37\2\2]e\5\26\f\2^_\7\35\2\2_`\7\21\2\2`a\7\24\2\2ab\7\22\2\2bc"+
+		"\7\37\2\2ce\5\26\f\2d[\3\2\2\2d^\3\2\2\2e\7\3\2\2\2fg\7\b\2\2gh\5\26\f"+
+		"\2h\t\3\2\2\2ij\5\20\t\2jk\7\36\2\2kr\3\2\2\2lr\5\f\7\2mr\5\16\b\2no\5"+
+		"\22\n\2op\7\36\2\2pr\3\2\2\2qi\3\2\2\2ql\3\2\2\2qm\3\2\2\2qn\3\2\2\2r"+
+		"\13\3\2\2\2st\7\3\2\2tu\7\35\2\2uy\5@!\2vw\5\20\t\2wx\7\36\2\2xz\3\2\2"+
 		"\2yv\3\2\2\2z{\3\2\2\2{y\3\2\2\2{|\3\2\2\2|}\3\2\2\2}~\5B\"\2~\r\3\2\2"+
-		"\2\177\u0080\5,\27\2\u0080\u0081\7\34\2\2\u0081\u0083\7\r\2\2\u0082\u0084"+
+		"\2\177\u0080\5,\27\2\u0080\u0081\7\35\2\2\u0081\u0083\7\r\2\2\u0082\u0084"+
 		"\5\24\13\2\u0083\u0082\3\2\2\2\u0083\u0084\3\2\2\2\u0084\u0089\3\2\2\2"+
 		"\u0085\u0086\7\4\2\2\u0086\u0088\5\24\13\2\u0087\u0085\3\2\2\2\u0088\u008b"+
 		"\3\2\2\2\u0089\u0087\3\2\2\2\u0089\u008a\3\2\2\2\u008a\u008c\3\2\2\2\u008b"+
 		"\u0089\3\2\2\2\u008c\u008d\7\16\2\2\u008d\u0091\5@!\2\u008e\u0090\5\4"+
 		"\3\2\u008f\u008e\3\2\2\2\u0090\u0093\3\2\2\2\u0091\u008f\3\2\2\2\u0091"+
 		"\u0092\3\2\2\2\u0092\u0094\3\2\2\2\u0093\u0091\3\2\2\2\u0094\u0095\5B"+
-		"\"\2\u0095\17\3\2\2\2\u0096\u0097\5,\27\2\u0097\u0098\7\34\2\2\u0098\u0099"+
-		"\7\36\2\2\u0099\u009a\5\26\f\2\u009a\21\3\2\2\2\u009b\u009c\5,\27\2\u009c"+
-		"\u009d\7\34\2\2\u009d\u009e\7\21\2\2\u009e\u009f\7\24\2\2\u009f\u00a0"+
-		"\7\22\2\2\u00a0\23\3\2\2\2\u00a1\u00a2\5,\27\2\u00a2\u00a3\7\34\2\2\u00a3"+
+		"\"\2\u0095\17\3\2\2\2\u0096\u0097\5,\27\2\u0097\u0098\7\35\2\2\u0098\u0099"+
+		"\7\37\2\2\u0099\u009a\5\26\f\2\u009a\21\3\2\2\2\u009b\u009c\5,\27\2\u009c"+
+		"\u009d\7\35\2\2\u009d\u009e\7\21\2\2\u009e\u009f\7\24\2\2\u009f\u00a0"+
+		"\7\22\2\2\u00a0\23\3\2\2\2\u00a1\u00a2\5,\27\2\u00a2\u00a3\7\35\2\2\u00a3"+
 		"\25\3\2\2\2\u00a4\u00a5\5\30\r\2\u00a5\27\3\2\2\2\u00a6\u00a7\b\r\1\2"+
 		"\u00a7\u00a8\5\32\16\2\u00a8\u00af\3\2\2\2\u00a9\u00aa\f\3\2\2\u00aa\u00ab"+
 		"\5\64\33\2\u00ab\u00ac\5\30\r\4\u00ac\u00ae\3\2\2\2\u00ad\u00a9\3\2\2"+
@@ -2640,11 +2642,11 @@ public class NobleScriptParser extends Parser {
 		"\3\2\2\2\u00c7\u00c8\3\2\2\2\u00c8\35\3\2\2\2\u00c9\u00c7\3\2\2\2\u00ca"+
 		"\u00cb\7\r\2\2\u00cb\u00cc\5\30\r\2\u00cc\u00cd\7\16\2\2\u00cd\u00d0\3"+
 		"\2\2\2\u00ce\u00d0\5 \21\2\u00cf\u00ca\3\2\2\2\u00cf\u00ce\3\2\2\2\u00d0"+
-		"\37\3\2\2\2\u00d1\u00d6\5(\25\2\u00d2\u00d6\5$\23\2\u00d3\u00d6\7\34\2"+
+		"\37\3\2\2\2\u00d1\u00d6\5(\25\2\u00d2\u00d6\5$\23\2\u00d3\u00d6\7\35\2"+
 		"\2\u00d4\u00d6\5\"\22\2\u00d5\u00d1\3\2\2\2\u00d5\u00d2\3\2\2\2\u00d5"+
-		"\u00d3\3\2\2\2\u00d5\u00d4\3\2\2\2\u00d6!\3\2\2\2\u00d7\u00d8\7\34\2\2"+
+		"\u00d3\3\2\2\2\u00d5\u00d4\3\2\2\2\u00d6!\3\2\2\2\u00d7\u00d8\7\35\2\2"+
 		"\u00d8\u00d9\7\21\2\2\u00d9\u00da\7\24\2\2\u00da\u00db\7\22\2\2\u00db"+
-		"#\3\2\2\2\u00dc\u00dd\7\34\2\2\u00dd\u00df\7\r\2\2\u00de\u00e0\5\26\f"+
+		"#\3\2\2\2\u00dc\u00dd\7\35\2\2\u00dd\u00df\7\r\2\2\u00de\u00e0\5\26\f"+
 		"\2\u00df\u00de\3\2\2\2\u00df\u00e0\3\2\2\2\u00e0\u00e5\3\2\2\2\u00e1\u00e2"+
 		"\7\4\2\2\u00e2\u00e4\5\26\f\2\u00e3\u00e1\3\2\2\2\u00e4\u00e7\3\2\2\2"+
 		"\u00e5\u00e3\3\2\2\2\u00e5\u00e6\3\2\2\2\u00e6\u00e8\3\2\2\2\u00e7\u00e5"+

@@ -9,7 +9,6 @@ import types.ValueType;
 import types.VarType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static types.ValueType.*;
 
@@ -238,17 +237,19 @@ public class LLVMActions implements NobleScriptListener {
         switch (value.type) {
             case VALUE_INT:
             case VALUE_INT_REGISTER:
-                if (varDef.type != VarType.INT) {
+                if (varDef.type != VarType.INT && varDef.type != VarType.VAR) {
                     throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
+                varDef.type = VarType.INT;
                 generator.declare_i32(varDef.getLlvmId(), isBlank(varDef.scope));
                 generator.assign_i32(varDef.getLlvmId(), value.content, isBlank(varDef.scope));
                 break;
             case VALUE_DOUBLE:
             case VALUE_DOUBLE_REGISTER:
-                if (varDef.type != VarType.DOUBLE) {
+                if (varDef.type != VarType.DOUBLE && varDef.type != VarType.VAR) {
                     throw new InvalidAssignmentException(varDef, value, ctx.getStart().getLine(), ctx.expression().getStart().getCharPositionInLine());
                 }
+                varDef.type = VarType.DOUBLE;
                 generator.declare_double(varDef.getLlvmId(), isBlank(varDef.scope));
                 generator.assign_double(varDef.getLlvmId(), value.content, isBlank(varDef.scope));
                 break;

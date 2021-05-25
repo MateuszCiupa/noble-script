@@ -49,7 +49,7 @@ primitive_literal: BOOLEAN_LITERAL #boolean | INT_LITERAL #int | DOUBLE_LITERAL 
 
 type: primitive_type;
 
-primitive_type: BOOLEAN_TYPE | INT_TYPE | DOUBLE_TYPE | STRING_TYPE | NULL;
+primitive_type: BOOLEAN_TYPE | INT_TYPE | DOUBLE_TYPE | STRING_TYPE | NULL | VAR_TYPE;
 
 operator2: DIV_OP | MUL_OP;
 operator1: PLUS_OP | MINUS_OP;
@@ -92,6 +92,7 @@ BOOLEAN_TYPE: 'boolean';
 INT_TYPE: 'int';
 DOUBLE_TYPE: 'double';
 STRING_TYPE: 'string';
+VAR_TYPE: 'var';
 
 ID: [a-zA-Z][a-zA-Z0-9_-]*;
 

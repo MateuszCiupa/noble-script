@@ -1,7 +1,7 @@
 package types;
 
 public enum VarType {
-    BOOLEAN("boolean"), INT("int"), DOUBLE("double"), STRING("string"), NULL("null");
+    BOOLEAN("boolean"), INT("int"), DOUBLE("double"), STRING("string"), NULL("null"), VAR("var");
 
     public String type;
 
@@ -16,6 +16,7 @@ public enum VarType {
             case "string": return VarType.STRING;
             case "null": return VarType.NULL;
             case "double": return VarType.DOUBLE;
+            case "var": return VarType.VAR;
             default: throw new IllegalArgumentException(type);
         }
     }

@@ -5,7 +5,7 @@ import types.VarType;
 
 public class Definition {
     final public String id;
-    final public VarType type;
+    public VarType type;
     final public DefinitionType defType;
     final public String scope;
 
