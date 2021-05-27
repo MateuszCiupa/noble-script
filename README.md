@@ -17,3 +17,15 @@ ANTLR4/LLVM based compiler
 - dynamic types (type coercion).
 
 # Examples
+
+## Variables
+
+NobleScript variables must be initialized with declaration.
+
+## Types
+
+Basic types, arrays, var, type coercion
+
+## Compund statements
+
+## Functions
