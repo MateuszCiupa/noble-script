@@ -14,5 +14,6 @@ ANTLR4/LLVM based compiler
 - compound statements,
 - functions,
 - variable scopes,
+- dynamic types (type coercion).
 
 # Examples
