@@ -1,8 +1,8 @@
-# fuzzy-giggle
+# NobleScript
 ANTLR4/LLVM based compiler
 
-# Milestone 1
-Planned features
+# Planned features
+## Milestone 1
 - 2 types of variables: int and double,
 - read and write operations,
 - basic arithmetic operations,
@@ -10,12 +10,9 @@ Planned features
 - arrays,
 - strings.
 
-# Milestone 2
+## Milestone 2
 - compound statements,
 - functions,
 - variable scopes,
 
-# Extra:
-- ?classes,
-- structures,  
-- dynamic types,
+# Examples
