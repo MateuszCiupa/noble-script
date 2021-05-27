@@ -26,6 +26,12 @@ NobleScript variables must be initialized with declaration.
 
 Basic types, arrays, var, type coercion
 
+## Arithemtic operations
+
+Supported operators
+
 ## Compund statements
+
+Supported delimiters, if, while
 
 ## Functions
