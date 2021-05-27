@@ -20,7 +20,14 @@ ANTLR4/LLVM based compiler
 
 ## Variables
 
-NobleScript variables must be initialized with declaration.
+NobleScript variables must be initialized during declaration.
+
+```c
+int a = 5;
+double b = 5.5;
+```
+
+Variables cannot be 
 
 ## Types
 
